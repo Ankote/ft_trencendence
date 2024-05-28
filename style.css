@@ -1,11 +1,5 @@
-lklbody
-{
-    display: flex;
-    justify-content: center;
-    height: 100%;
-    align-items: center;
-}
-
-#canvas{
-    border:  solid 5px red;
+.game-container {
+    border: 3px solid #7d79d0;
+    margin: auto;
+    width: fit-content;
 }

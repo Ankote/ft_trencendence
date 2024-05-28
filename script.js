@@ -1,173 +1,202 @@
+// Select Canvas
 document.open();
-let canvas = document.getElementById("canvas");
-let ctx = canvas.getContext("2d");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
-let width = (canvas.width = (window.innerWidth / 2 + window.innerWidth / 16))
-let height = (canvas.height = (width / 2 + width / 16))
+//Defined Variables
 
-function random(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+const PLAYER_HEIGHT 	= 100;
+const PLAYER_WIDTH 		=	8;
+const BALL_START_SPEED  = 1;
+const COMPONRNT_LEV 	= .5
+const BALL_DELTA_SPEED  = .1
+
+const net ={
+		x: canvas.width / 2 - 1,
+		y: 0,
+		width:2,
+		height: 10,
+		color : 'green'
 }
 
-function randomRGB() {
-  return `rgb(${random(0, 255)} ${random(0, 255)} ${random(0, 255)})`;
+
+const player = {
+
+	x			:	1,
+	y			:	canvas.height / 2 - PLAYER_HEIGHT / 2,
+	width		:	PLAYER_WIDTH,
+	height		:	PLAYER_HEIGHT,
+	color		: "#00cc66",
+	score		: 0,
+
 }
 
-class Ball {
-  constructor(x, y, velX, velY, color, size) {
-    this.x = x;
-    this.y = y;
-    this.velX = velX;
-    this.velY = velY;
-    this.color = color;
-    this.size = size;
-  }
-
-    draw()
-    {
-        ctx.beginPath();
-        ctx.fillStyle = this.color;
-        ctx.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
-        ctx.fill();
-    }
-
-  update(player1, player2)
-  {
-
-        if ((this.x) >= width - player2.playerW - 1) {
-			if ((this.y >= player2.y - player2.playerH / 2) && (this.y < player2.y + player2.playerH / 2) )
-			{
-				this.velX = -(this.velX);
-			}
-			else
-			{
-				this.x = width / 2;
-				this.y = height / 2;
-				this.velX = -(this.velX);
-
-				player1.score ++;
-				console.log("player 2 : " + player2.score);
-				console.log("player 1 : " + player1.score);
-
-			}
-        }
-        if ((this.x) <= player1.playerW - 1)
-		{
-		
-			if ((this.y >= player1.y - player1.playerH / 2) && (this.y < player1.y + player1.playerH / 2) )
-			{
-				this.velX = -(this.velX);
-			}
-			else
-			{
-				this.x = width / 2;
-				this.y = height / 2;
-				this.velX = -(this.velX);
-				player2.score ++;
-				console.log("player 2 : " + player2.score);
-				console.log("player 1 : " + player1.score);
+const componet = {
 	
-			}
-        }
-        if ((this.y + this.size) >= height) {
-            this.velY = -(this.velY);
-        }
-        if ((this.y - this.size) <= 0) {
-            this.velY = -(this.velY);
-        }
-        this.x += this.velX;
-        this.y += this.velY;
-	}    
+	x		:	canvas.width - player.width - 1,
+	y		:	canvas.height / 2 - PLAYER_HEIGHT / 2 ,
+	width	:	PLAYER_WIDTH,
+	height	:	PLAYER_HEIGHT,
+	color	: 	"#cc8100",
+	score	: 0,
+
 }
 
-class player
-{
-    constructor(x, y, velY, playerH, playerW, score)
-    {
-        this.playerH = playerH;
-        this.playerW = playerW;
-        this.velY = velY;
-        this.x = x;
-        this.y = y;
-		this.score = score;
-    }
-    draw()
-    {
-        ctx.beginPath();
-        ctx.fillStyle = "#fb0";
-        ctx.fillRect(this.x, this.y - (this.playerH / 2),this.playerW , this.playerH);
-    }
+const ball = {
 
-  
+		x				:	canvas.width / 2,
+		y 			:	canvas.height / 2,
+		radius	:	8,
+		speed 	:	BALL_START_SPEED,
+		color		:	"#ff4d4d",
+		velocityX : 5,
+		velocityY	:	5
+
 }
 
-function  update(player1, player2)
+// Draw shaps & text finction
+function drawRect(x, y, w, h, color)
 {
-	document.addEventListener("keydown", event =>
+	ctx.fillStyle = color;
+	ctx.fillRect(x, y, w, h);
+
+}
+
+function drawBall(x, y, r, color)
+{
+		ctx.fillStyle = color;
+		ctx.beginPath();
+		ctx.arc(x, y, r, Math.PI * 2, false) // math.PI : meaning draw 180 * 2 // false : 3aks 3a9arib sa3a but not 
+																					//matter because we're going to draw complet circle
+		ctx.closePath();	
+		ctx.fill();
+}
+
+function drawText(text, x, y, color)
+{
+	ctx.fillStyle = color;
+	ctx.font = "45px fantasy";
+	ctx.fillText(text, x, y)
+}
+
+function drawNet()
+{
+	for (let i = 0; i <= canvas.height; i += 15)
 	{
-		if (event.key == "w")
-		{
-			if (player1.y > player1.playerH / 2)
-			{
-				player1.y -= 0.05;
-				console.log(player1.y);
-			}
-		}
-		else if (event.key == "s")
-		{
-			if (player1.y <= height - player1.playerH / 2)
-			{
-				player1.y += 0.05;
-				console.log(player1.y);
-			}
-		}
-		else if (event.key == "ArrowUp")
-		{
-			if (player2.y > player2.playerH / 2)
-			{
-				player2.y -= 0.05;
-				console.log(player2.y);
-			}
-		}
-		else if (event.key == "ArrowDown")
-		{
-			if (player2.y <= height - player2.playerH / 2)
-			{
-				player2.y += 0.05;
-				console.log(player2.y);
-			}
-		}
-	});
+		drawRect(net.x, net.y + i, net.width, net.height, net.color)
+	}
 }
 
-    const size = 5;
-    const ball = new Ball(width / 2, height / 2, 3, 3, randomRGB(),size,);
-    const player1 = new player(0, height / 2, 3, 100, 10, 0);
-    const player2 = new player(width - 10, height / 2, 2, 100, 10, 0);
+//Draw canvas ===================> render
+function render()
+{
+	// Clear the cenves
+		drawRect(0, 0, canvas.width, canvas.height, "BLACK");
+		// Draw Net
+		drawNet();
+		//Drawthe ball
+		drawBall(ball.x, ball.y, ball.radius, ball.color)
+		//Draw players
+		drawRect(player.x, player.y, player.width, player.height, player.color);
+		drawRect(componet.x, componet.y, componet.width, componet.height, componet.color);
+		//display scors
+		drawText(player.score, (canvas.width / 4.7), canvas.height / 5, "purple")
+		drawText(componet.score, (canvas.width / 4.2) * 3, canvas.height / 5, "purple")
+}
+// check collision'
 
-function loop() {
-	ctx.fillStyle = "rgb(152 246 243 / 50%)";
-	ctx.fillRect(0, 0, width, height);
+function collision(ball, player)
+{
+	ball.top 		= ball.y - ball.radius;
+	ball.bottom 	= ball.y + ball.radius;
+	ball.left		= ball.x - ball.radius;
+	ball.right		= ball.x + ball.radius;
 
-	ball.draw();
-	ball.update(player1, player2		);
-	player1.draw();
-	player2.draw();
-	update(player1, player2);
-	//   ball.collisionDetect();
+	
+	player.top 		= 	player.y;
+	player.bottom 	=	player.y + player.height;
+	player.left		=	player.x;
+	player.right	= 	player.x + player.width;
 
-	requestAnimationFrame(loop);
+	return(
+		ball.right > player.left && ball.bottom > player.top
+			&& ball.left < player.right && ball.top < player.bottom
+	);
 }
 
-loop(); 
+// AI movment
 
-document.addEventListener("keydown", event =>
-{ 
-	console.log("ankote reda");
-});
+function alep(a, b, t)
+{
+	return (a + (b - a) * t)
+}
+//Update pos, mov, score ...
 
-// document.addEventListener("keyup", event =>
-// {
-//   	console.log(event.key);
-// });
-// console.log(" a YUOUIUU!");
+canvas.addEventListener("mousemove", (event) =>{
+	let rect = canvas.getBoundingClientRect();
+	player.y = event.clientY - rect.top - player.height  / 2;
+})
+
+function resetBall()
+{
+	ball.x			=	canvas.width / 2,
+	ball.y 			=	canvas.height / 2,
+	ball.speed 		=	BALL_START_SPEED,
+	ball.velocityX 	= 	5,
+	ball.velocityY	=	5
+
+}
+function update()
+{
+			
+		// document.addEventListener('keydown', (event) =>{
+		// 	player.y += 1;
+		// })
+
+
+		ball.x += ball.velocityX * ball.speed;
+		ball.y += ball.velocityY * ball.speed;
+
+		// Wall collesions with TOP & bottom  borders
+		if (ball.y - ball.radius > canvas.height || ball.y < 0)
+				ball.velocityY *= -1;
+
+		let selectPlayer = ball.x < net.x ? player : componet;
+		let otherP = ball.x < net.x ? player : componet;
+
+		if (collision(ball, selectPlayer))
+		{
+			ball.velocityX = - ball.velocityX
+			ball.speed += BALL_DELTA_SPEED
+		}
+		// Component Movment (simple AI)
+		let targetPos = ball.y - componet.height / 2;
+		let currentPos = componet.y;
+
+		componet.y = alep(currentPos, targetPos, COMPONRNT_LEV);
+		//Update score
+		if (ball.x - ball.radius < 0)
+		{
+			componet.score ++;
+			resetBall();
+		}
+		if (ball.x - ball.radius > canvas.width)
+		{
+			player.score ++;
+			resetBall();
+		}
+
+
+}
+
+
+function game()
+{
+	update();
+	render();
+}
+
+const FPS = 60 //frims per second
+
+setInterval(game , 1000/ FPS)
+document.close();
