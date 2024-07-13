@@ -1,51 +1,47 @@
 import json
-
-from .game import  Player
+import asyncio
+from .game import Player, Ball, Net, Canvas, moveBot, PLAYER_HEIGHT, PLAYER_WIDTH
 from channels.generic.websocket import AsyncWebsocketConsumer
+from django.contrib.auth.models import User
+# from models import Player
+from .models import Room
 
 
-# 
-player = Player()
-
-class ChatConsumer(AsyncWebsocketConsumer):
-    global player
+class GameConsumer(AsyncWebsocketConsumer):
+    active_rooms = {}  # Dict
     async def connect(self):
-        self.room_group_name = 'test'
-        # Add this channel to the group
-        await self.channel_layer.group_add(
-            self.room_group_name,
-            self.channel_name
-        )
-        await self.accept()
-        print(player.x)
-    async def disconnect(self, close_code):
-        # Remove this channel from the group
-        await self.channel_layer.group_discard(
-            self.room_group_name,
-            self.channel_name
-        )
 
+        # me = self.scope['user']
+        # user_id = self.scope['url_route']['kwargs']['user_id']
+        # try:
+        #     user = await Player.objects.aget(ID=user_id)
+        #     print(f"user :{user.password}")
+        # except User.DoesNotExist:
+        #     print(f"User with username {user_id} does not exist.")
+        #     await self.close()
+        
+        # if (user.is_authenticated):
+        #     print("loged")
+        pass
 
     async def receive(self, text_data):
-
         text_data_json = json.loads(text_data)
-        
-        # Send message to the group
-        global player
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                'type': 'chat_message',
-                'player' : player.to_dict()
-            }
-        )
+        print(text_data_json.get('id'))
 
-    async def chat_message(self, event):
+
+    async def gameStarts(self, event):
         
         # Send message to WebSocket
 
-        global player
         await self.send(text_data=json.dumps({
-            'type': 'chat',
-            'player' :  player.to_dict()
+            'status' : "gameStarts"
+        }))
+
+
+    async def watingOpponent(self, event):
+        
+        # Send message to WebSocket
+
+        await self.send(text_data=json.dumps({
+            'status' : "watingOpponent"
         }))

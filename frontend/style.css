@@ -1,5 +1,85 @@
-.game-container {
-    border: 3px solid #7d79d0;
-    margin: auto;
-    width: fit-content;
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+    margin: 0;
 }
+.button-container {
+    text-align: center;
+}
+.game-button {
+    display: inline-block;
+    width: 150px;
+    height: 200px;
+    margin: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+.game-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+.play-bot-button {
+    background-color: #28a745;
+}
+.play-bot-button:hover {
+    background-color: #218838;
+}
+
+.waiting-container {
+    text-align: center;
+    padding: 50px;
+    background-color: #ffffff;
+    border: 2px solid #007bff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.waiting-text {
+    font-size: 24px;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.form-container {
+    text-align: center;
+    padding: 50px;
+    background-color: #ffffff;
+    border: 2px solid #007bff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.form-input {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.submit-button {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+.submit-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
