@@ -1,5 +1,13 @@
 // Select Canvas
 
+function startGame(room_name)
+{
+	let url = `ws://127.0.0.1:8000/ws/game/` + room_name + '/'
+	const chatSocket = new WebSocket(url);
+	// changeContent(gamePage(room_name))
+}
+
+
 function matchMakingHandling()
 {
 	let url = `ws://127.0.0.1:8000/ws/socket-server/` + ID + '/'
@@ -13,16 +21,16 @@ function matchMakingHandling()
 			'username' : username
 		})
 		)
+		console.log("socket connected")
 	};
 
 	chatSocket.onmessage = function(event)
 	{
 		let data = JSON.parse(event.data);
-		if( data.status = 'gameStart')
+		console.log(data.room_name)
+		if( data.status == 'start_game')
 		{
-			chatSocket.send(JSON.stringify({
-				'message':'start'
-				}))
+			startGame(data.room_name)
 				
 		}
 	};
@@ -42,6 +50,18 @@ function loginPage()
         <input type="text" id = "ID" class="form-input" placeholder="Enter ID" required>
         <input type="text" id = "username" class="form-input" placeholder="Enter Username" required>
         <button class="submit-button" id= 'login'>Submit</button>
+    `;
+}
+
+
+function gamePage(room_name)
+{
+
+
+	return `
+        '<div class="waiting-container"> 
+			<div class="waiting-text"> ` + room_name + ` Game Starting . . .</div>
+		</div>'
     `;
 }
 function matchMakingPage()

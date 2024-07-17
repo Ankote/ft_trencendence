@@ -44,6 +44,8 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+AUTH_USER_MODEL = 'game.User'
+
 INSTALLED_APPS = [
     'daphne',
     'game',
@@ -148,4 +150,3 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
 
-AUTH_USER_MODEL = 'game.CustomUser'
