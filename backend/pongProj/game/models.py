@@ -11,6 +11,7 @@ class User(AbstractUser):
     first_name  = models.CharField(max_length=255)
     name        =  models.CharField(max_length=255)
     dahmad =  models.CharField(max_length=255, blank=True)
+    is_active = models.BooleanField(default=True)
     # You can add other custom fields here
 
     def __str__(self):
@@ -20,7 +21,8 @@ class Room(models.Model):
     name = models.CharField(max_length=255, unique=True)
     player1 = models.CharField(max_length=255)
     player2 = models.CharField(max_length=255)
-
+    is_active = models.BooleanField(default=True)
+    
     def __str__(self):
         return self.name
     

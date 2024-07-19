@@ -10,10 +10,6 @@ class GameLogicConsumer(AsyncWebsocketConsumer):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f'game_{self.room_name}'
         self.room = await self.get_room(self.room_name)
-        if self.room is not None:
-            print(self.room.player1)
-        else:
-            print("can't find")
             
         await self.channel_layer.group_add(
             self.room_group_name,
@@ -30,8 +26,8 @@ class GameLogicConsumer(AsyncWebsocketConsumer):
     @sync_to_async
     def get_room(self, room_name):
         try:
-            print("findd")
-            print(f"room   : {room_name}")
+            # print("findd")
+            # print(f"room   : {room_name}")
             return Room.objects.get(name=room_name)
         except Room.DoesNotExist:
             return None

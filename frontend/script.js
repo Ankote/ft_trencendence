@@ -4,7 +4,7 @@ function startGame(room_name)
 {
 	let url = `ws://127.0.0.1:8000/ws/game/` + room_name + '/'
 	const chatSocket = new WebSocket(url);
-	// changeContent(gamePage(room_name))
+	changeContent(gamePage(room_name))
 }
 
 
@@ -33,6 +33,11 @@ function matchMakingHandling()
 			startGame(data.room_name)
 				
 		}
+		if( data.status == 'leaving')
+		{
+			changeContent(leavingGame())
+				
+		}
 	};
 }
 	
@@ -52,6 +57,17 @@ function loginPage()
         <button class="submit-button" id= 'login'>Submit</button>
     `;
 }
+
+function leavingGame()
+{
+	return `
+         <div class="victory-message">
+        <h1>Opponent Gave Up</h1>
+        <p>You Win!</p>
+   		 </div>
+    `;
+}
+
 
 
 function gamePage(room_name)

@@ -1,59 +1,68 @@
 import json
 import asyncio
-from .game import Player, Ball, Net, Canvas, moveBot, PLAYER_HEIGHT, PLAYER_WIDTH
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
+from django.db.models import Q  # Import Q for OR conditions
 from .models import User
 # from models import Player
 from .models import Room
+import time
 
 
 class MatchmakingConsumer(AsyncWebsocketConsumer):
-    waiting_players = []
-    active_rooms = {}
+    waiting_players     = []
+    channel_name_map    = {} 
     room_name = ""
+
     async def connect(self):
-        print(f"Player : {self.channel_name}")
         self.user = self.scope["user"]
         if self.user.is_authenticated:
-            # print(f"user {self.user.username} is connected")
+            if await self.is_player_in_active_game(self.user.username):
+                print("player already playes")
+                await self.close()
             self.add_to_waiting_list()
             await self.match_players()
             await self.accept()
         else:
-            # print("disconnected")
+            print("player is playing")
             await self.close()
     
-
     async def disconnect(self, close_code):
+        # Room.objects.get()
+        self.remove_from_waiting_list()
+        room_name = await self.mark_room_inactive()
+        print(f"room : {room_name}")
+        if room_name:
+            await self.notify_opponent(room_name)
 
-        # self.remove_from_waiting_list()
         pass
 
-
     def add_to_waiting_list(self):
-        self.__class__.waiting_players.append(self.channel_name)
+        print(self.user.username)
+        self.__class__.channel_name_map[self.user.username] = self.channel_name
+        self.__class__.waiting_players.append(self.user.username)
 
 
     def remove_from_waiting_list(self):
-        # print("disconnected")
         if self.channel_name in self.__class__.waiting_players:
-            self.__class__.waiting_players.remove(self.channel_name)
+            self.__class__.waiting_players.remove(self.user.username)
 
     async def match_players(self):
-        # print( len(self.__class__.waiting_players))
         if len(self.__class__.waiting_players) >= 2:
             player1 = self.__class__.waiting_players.pop(0)
             player2 = self.__class__.waiting_players.pop(0)
-            room_name = f"room_{len(self.__class__.active_rooms)}"
-            self.__class__.active_rooms[room_name] = [player1, player2]
+            room_name = await self.generate_unique_room_name()
 
+            # Retrieve channel names for the players
+            player1_channel = await self.get_channel_name(player1)
+            player2_channel = await self.get_channel_name(player2)
 
-            await self.channel_layer.group_add(room_name, player1)
-            await self.channel_layer.group_add(room_name, player2)
+            await self.channel_layer.group_add(room_name, player1_channel)
+            await self.channel_layer.group_add(room_name, player2_channel)
             
             # Save the room to the database
             await self.create_room(room_name, player1, player2)
+
             await self.channel_layer.group_send(
                 room_name,
                 {
@@ -61,17 +70,60 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
                     'room_name': room_name
                 }
             )
-            # print(f"ROOM : {room_name} CREATED")
+
+
+    async def generate_unique_room_name(self):
+        while True:
+            room_name = f"room_{int(time.time()*1000)}"
+            exists = await  self.room_exists(self.room_name)
+            if not exists:
+                return room_name
+
+    @sync_to_async
+    def room_exists(self, room_name):
+        return Room.objects.filter(name=room_name).exists()
+    
+            
     @sync_to_async
     def create_room(self, room_name, player1, player2):
         Room.objects.create(
             name=room_name,
             player1=player1,
-            player2=player2
+            player2=player2,
+            is_active=True
         )
 
+    @sync_to_async
+    def get_channel_name(self, username):
+        return self.__class__.channel_name_map.get(username)
+        
 
+    @sync_to_async
+    def is_player_in_active_game(self, username):
+        return User.objects.filter(
+            Q(username=username, is_active=True) 
+        ).exists()
     
+    @sync_to_async
+    def is_player_in_active_game(self, username):
+        return Room.objects.filter(
+            Q(player1=username, is_active=True) | Q(player2=username, is_active=True)
+        ).exists()
+    
+
+
+    @sync_to_async
+    def mark_room_inactive(self):
+        room = Room.objects.filter(
+            Q(player1=self.user.username) | Q(player2=self.user.username),
+            is_active=True
+        ).first()
+        if room:
+            room.is_active = False
+            room.save()
+            return room.name
+        return None
+
     async def start_game(self, event):
         # Sending a message to the WebSocket (asynchronous operation)
         # print(event['room_name'])
@@ -80,6 +132,27 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
             'room_name':  event['room_name'],
             'status' : "start_game"
         }))
+    def remove_from_waiting_list(self):
+        if self.channel_name in self.__class__.waiting_players:
+            self.__class__.waiting_players.remove(self.channel_name)
+
+
+    async def notify_opponent(self, room_name):
+        await self.channel_layer.group_send(
+            room_name,
+            {
+                'type': 'opponent_left',
+                'status': 'leaving'
+            }
+        )
+
+
+    async def opponent_left(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'opponent_left',
+            'status': event['status']
+        }))
+            
     
     # def generateRoomName(self)
     # {

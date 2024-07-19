@@ -83,3 +83,33 @@ body {
     transform: scale(1.05);
 }
 
+
+.victory-message {
+    text-align: center;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 40px 60px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 2s ease-in-out;
+}
+
+.victory-message h1 {
+    font-size: 3em;
+    margin: 0 0 20px;
+    color: #ffd700;
+}
+
+.victory-message p {
+    font-size: 1.5em;
+    margin: 0;
+    color: #ff4500;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
