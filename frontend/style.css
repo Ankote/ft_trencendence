@@ -7,6 +7,11 @@ body {
     background-color: #f0f0f0;
     margin: 0;
 }
+
+#canvas{
+    border:  solid 5px red;
+}
+
 .button-container {
     text-align: center;
 }

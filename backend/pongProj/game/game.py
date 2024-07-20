@@ -21,13 +21,7 @@ class Player:
         self.color      = "#00cc66"
         self.score      = 0
     
-    # def __init__(self):
-    #     self.x          = 1
-    #     self.y          = Canvas.height / 2 - PLAYER_HEIGHT / 2
-    #     self.width      = PLAYER_WIDTH
-    #     self.height     = PLAYER_HEIGHT
-    #     self.color      = "#00cc66"
-    #     self.score      = 0
+
 
     def to_dict(self):
         return {
@@ -119,7 +113,7 @@ class Ball:
                 self.velocityY *= -1
 
 
-    def to_dect(sefl):
+    def to_dict(sefl):
          return{
               
               'x'           :   sefl.x,

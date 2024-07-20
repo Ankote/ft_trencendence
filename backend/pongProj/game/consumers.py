@@ -19,7 +19,6 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
         if self.user.is_authenticated:
             if await self.is_player_in_active_game(self.user.username):
                 print("player already playes")
-                await self.close()
             self.add_to_waiting_list()
             await self.match_players()
             await self.accept()
@@ -28,10 +27,8 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
             await self.close()
     
     async def disconnect(self, close_code):
-        # Room.objects.get()
         self.remove_from_waiting_list()
         room_name = await self.mark_room_inactive()
-        print(f"room : {room_name}")
         if room_name:
             await self.notify_opponent(room_name)
 
@@ -100,12 +97,6 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def is_player_in_active_game(self, username):
-        return User.objects.filter(
-            Q(username=username, is_active=True) 
-        ).exists()
-    
-    @sync_to_async
-    def is_player_in_active_game(self, username):
         return Room.objects.filter(
             Q(player1=username, is_active=True) | Q(player2=username, is_active=True)
         ).exists()
@@ -125,8 +116,7 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
         return None
 
     async def start_game(self, event):
-        # Sending a message to the WebSocket (asynchronous operation)
-        # print(event['room_name'])
+        # Sending a message to the WebSo
         await self.send(text_data=json.dumps({
             'type': 'start_game',
             'room_name':  event['room_name'],
