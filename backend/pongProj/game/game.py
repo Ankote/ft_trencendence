@@ -4,18 +4,25 @@ BALL_START_SPEED  	= .5
 COMPONRNT_LEV 		= .3
 BALL_DELTA_SPEED  	= .01
 
-class Canvas:
-	width = 600
-	height = 400
-	
-# game.py
-# game.py
-# game.py
+class   Table:
+        width = 600
+        height = 400
+        def __init__(self):
+            self.width   = 600
+            self.height  = 400
+            pass
+        
+        def to_dict(self):
+            return{
+                "width" : self.width,
+                "height" : self.height
+            }
+
 
 class Player:
     def __init__(self, x):
         self.x = x
-        self.y          = Canvas.height / 2 - PLAYER_HEIGHT / 2
+        self.y          = Table.height / 2 - PLAYER_HEIGHT / 2
         self.width      = PLAYER_WIDTH
         self.height     = PLAYER_HEIGHT
         self.color      = "#00cc66"
@@ -35,8 +42,8 @@ class Player:
 
 class Opponent:
 # def __init__(self):
-    x          = Canvas.width - PLAYER_WIDTH - 1
-    y          = Canvas.height / 2 - PLAYER_HEIGHT / 2
+    x          = Table.width - PLAYER_WIDTH - 1
+    y          = Table.height / 2 - PLAYER_HEIGHT / 2
     width      = PLAYER_WIDTH
     height     = PLAYER_HEIGHT
     color      = "#cc8100"
@@ -60,7 +67,7 @@ class Opponent:
 
 class Net:
     # def __init__(self):
-    x      =   Canvas.width / 2 - 1
+    x      =   Table.width / 2 - 1
     y      =   0
     width  =   2
     height =   10
@@ -79,8 +86,8 @@ class Net:
 class Ball:
     
     def __init__(self) :
-        self.x			=	Canvas.width / 2
-        self.y 			=	Canvas.height / 2
+        self.x			=	Table.width / 2
+        self.y 			=	Table.height / 2
         self.radius		=	8
         self.speed 		=	BALL_START_SPEED
         self.color		=	"#ff4d4d"
@@ -98,18 +105,18 @@ class Ball:
             opponentP.score += 1
             resetBall(self)
             
-        if self.x - self.radius > Canvas.width:
+        if self.x - self.radius > Table.width:
             player.score += 1
             resetBall(self)
 
-        if (gameOver(player, opponent)):
-            # resetBall(self)
-            resetPlayers(player, opponent)
+        # if (gameOver(player, opponent)):
+        #     # resetBall(self)
+        #     resetPlayers(player, opponent)
 
         # print(selectPlayer.y)
         self.x += self.velocityX * self.speed
         self.y += self.velocityY * self.speed
-        if self.y - self.radius > Canvas.height or self.y < 0:
+        if self.y - self.radius > Table.height or self.y < 0:
                 self.velocityY *= -1
 
 
@@ -161,8 +168,8 @@ def alep(a, b, t):
 
 def resetBall(ball):
 
-    ball.x			=	Canvas.width / 2
-    ball.y 			=	Canvas.height / 2
+    ball.x			=	Table.width / 2
+    ball.y 			=	Table.height / 2
     ball.radius		=	8
     ball.speed 		=	BALL_START_SPEED
     ball.color		=	"#ff4d4d"
@@ -177,9 +184,9 @@ def gameOver(player1, player2):
      return player1.score == 10 or player2.score == 10
 
 def resetPlayers(player, opponent):
-     player.y = Canvas.height / 2 - PLAYER_HEIGHT / 2
+     player.y = Table.height / 2 - PLAYER_HEIGHT / 2
      player.score = 0
-     opponent.y = Canvas.height / 2 - PLAYER_HEIGHT / 2
+     opponent.y = Table.height / 2 - PLAYER_HEIGHT / 2
      opponent.score = 0
 
 #instiate objects

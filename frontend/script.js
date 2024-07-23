@@ -1,10 +1,10 @@
-// Select Canvas
+// Select table
 
 let player = {}
 let opponent = {}
 let net = {}
 let ball = {}
-let canvas = {}
+let table = {}
 let ctx
 
 
@@ -12,40 +12,37 @@ function startGame(room_name)
 {
 	let url = `ws://127.0.0.1:8000/ws/game/${room_name}/${ID}/`;
 
-	const gameDocket = new WebSocket(url);
+	const gameSocket = new WebSocket(url);
 	changeContent(gamePage(room_name))
+	const canv = document.getElementById("canvas");
+	ctx = canv.getContext("2d");
 
-		
-	document.addEventListener("mousemove", (event) => {
-		gameDocket.send(JSON.stringify({
-			'message': 'moved'
+	canv.addEventListener("mousemove", (event) => {
+		let rect = canv.getBoundingClientRect();
+		gameSocket.send(JSON.stringify({
+			'action': 'moved',
+			'rect': rect,
+			'clientY': event.clientY
 		}));
 	});
 
-	gameDocket.onmessage = function(event)
+	// const cnv = document.getElementById("canvas");
+	gameSocket.onmessage = function(event)
 	{
-		let data = JSON.parse(event.data);
+		console.log("mouseMove")
+		let data = JSON.parse(event.data);								
 		if( data.action == 'changes')
 		{
-			const gameData = data
-			player = data.player;
-			opponent = data.opponent;
-			net = data.net;
-			ball = data.ball
-			canvas = data.canvas
-			
-			const canv = document.getElementById("canvas");
-			ctx = canv.getContext("2d");
+			// const gameData = data
+			player 			= data.player;
+			opponent	 	= data.opponent;
+			net 			= data.net;;
+			ball 			= data.ball;
+			// console.log(player)
+			table 			= data.table;
 			render()
 		}
-
 	}
-
-}
-
-function drawItems()
-{
-
 }
 
 function matchMakingHandling()
@@ -61,19 +58,20 @@ function matchMakingHandling()
 			'username' : username
 		})
 		)
-		console.log("socket connected")
+		// console.log("socket connected")
 	};
 
 	matchingSocket.onmessage = function(event)
 	{
 		let data = JSON.parse(event.data);
-		console.log(data.room_name)
+		// console.log(data.room_name)
 		if( data.status == 'start_game')
 		{
+
 			startGame(data.room_name)
 				
 		}
-		console.log(data.status)
+		// console.log(data.status)
 		if( data.status == 'leaving')
 		{
 			changeContent(leavingGame())
@@ -82,7 +80,7 @@ function matchMakingHandling()
 		if( data.status == 'changes')
 		{
 			const gameData = data.data
-			console.log(gameData)
+			// console.log(gameData)
 				
 		}
 	};
@@ -106,7 +104,7 @@ function loginPage()
 
 function leavingGame()
 {
-	console.log("wewwewew")
+	// console.log("wewwewew")
 	return `
          <div class="victory-message">
         <h1>Opponent Gave Up</h1>
@@ -118,9 +116,8 @@ function leavingGame()
 function gamePage(room_name)
 {
 
-
 	return `
-           <canvas id='canvas' style="background : blueviolet;"></canvas>
+           <canvas id='canvas' style="background : black;" width="600" height="400"></canvas>
     `;
 }
 function matchMakingPage()
@@ -164,14 +161,12 @@ document.addEventListener("click", event=>{
 			if (ID != "")
 				changeContent(waitingOpponent());
 				matchMakingHandling();
-				console.log("id : " + ID + " username : " + username)
+				// console.log("id : " + ID + " username : " + username)
 		};
 
 	}
 
 })
-
-
 
 // Draw shapes & text functions
 function drawRect(x, y, w, h, color) {
@@ -196,7 +191,7 @@ function drawText(text, x, y, color) {
 
 
 function drawNet() {
-    for (let i = 0; i <= canvas.height; i += 15) {
+    for (let i = 0; i <= table.height; i += 15) {
         drawRect(net.x, net.y + i, net.width, net.height, net.color);
     }
 }
@@ -209,7 +204,7 @@ function drawPlayer(player) {
 function render()
 {
 	// Clear the cenves
-		drawRect(0, 0, canvas.width, canvas.height , "BLACK");
+		drawRect(0, 0, table.width, table.height , "BLACK");
 		// Draw Net
 		drawNet();
 		//Drawthe ball
@@ -218,6 +213,16 @@ function render()
 		drawPlayer(opponent)
 		drawPlayer(player)
 		//display scors
-		drawText(player.score, (canvas.width / 4.7), canvas.height / 5, "purple")
-		drawText(opponent.score, (canvas.width / 4.2) * 3, canvas.height / 5, "purple")
+		drawText(player.score, (table.width / 4.7), table.height / 5, "purple")
+		drawText(opponent.score, (table.width / 4.2) * 3, table.height / 5, "purple")
 }
+
+
+// Check collision and AI movement can be added here
+
+// function game() {
+// 	render();
+// }
+
+// const FPS = 60; // frames per second
+// setInterval(game, 1000 / FPS);

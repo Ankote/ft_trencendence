@@ -27,7 +27,9 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
             await self.close()
     
     async def disconnect(self, close_code):
+        print("disconnected")
         self.remove_from_waiting_list()
+        print(len(self.__class__.waiting_players))
         room_name = await self.mark_room_inactive()
         if room_name:
             await self.notify_opponent(room_name)
@@ -35,17 +37,18 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
         pass
 
     def add_to_waiting_list(self):
-        print(self.user.username)
         self.__class__.channel_name_map[self.user.username] = self.channel_name
         self.__class__.waiting_players.append(self.user.username)
 
 
     def remove_from_waiting_list(self):
-        if self.channel_name in self.__class__.waiting_players:
+        print("Droped")
+        if self.user.username in self.__class__.waiting_players:
             self.__class__.waiting_players.remove(self.user.username)
 
     async def match_players(self):
         if len(self.__class__.waiting_players) >= 2:
+            print("good")
             player1 = self.__class__.waiting_players.pop(0)
             player2 = self.__class__.waiting_players.pop(0)
             room_name = await self.generate_unique_room_name()
@@ -122,10 +125,6 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
             'room_name':  event['room_name'],
             'status' : "start_game"
         }))
-    def remove_from_waiting_list(self):
-        if self.channel_name in self.__class__.waiting_players:
-            self.__class__.waiting_players.remove(self.channel_name)
-
 
     async def notify_opponent(self, room_name):
         await self.channel_layer.group_send(
