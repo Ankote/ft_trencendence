@@ -3,21 +3,20 @@ from django.contrib.auth.admin import UserAdmin
 # from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import User
 from .models import Room
+# from .models import FriendShip
+# from .models import singleMatch
+# from .models import Tournament
+# from .models import matchTournament
+# from .models import tournamentScore
+# from .models import userTournament
 
 
-# class CustomUserAdmin(UserAdmin):
-#     add_form = CustomUserCreationForm
-#     form = CustomUserChangeForm
-#     model = CustomUser
-#     list_display = [
-#         "email",
-#         "username",
-#         "name",
-#         "is_staff",
-#     ]
-#     fieldsets = UserAdmin.fieldsets + ((None, {"fields": ("name",)}),)
-#     add_fieldsets = UserAdmin.add_fieldsets + ((None, {"fields": ("name",)}),)
 
-# admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(User)
 admin.site.register(Room)
+# admin.site.register(FriendShip)
+# admin.site.register(singleMatch)
+# admin.site.register(Tournament)
+# admin.site.register(matchTournament)
+# admin.site.register(tournamentScore)
+# admin.site.register(userTournament)

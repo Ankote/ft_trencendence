@@ -3,7 +3,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
 from .models import Room
 import asyncio
-from .game import Player, Ball, Net, Table, PLAYER_WIDTH, PLAYER_HEIGHT
+from .game import Player, Ball, Net, Table, PLAYER_WIDTH, PLAYER_HEIGHT, gameOver
 
 class GameLogicConsumer(AsyncWebsocketConsumer):
     playing_rooms = {}
@@ -70,8 +70,13 @@ class GameLogicConsumer(AsyncWebsocketConsumer):
 
     async def send_data_periodically(self):
         game_state = self.__class__.playing_rooms[self.room_group_name]
-
         while True:
+
+            if  gameOver(game_state['lplayer'] ,game_state['rplayer'] ) is  not None:
+                await self.endTheGame()
+                print("gameover")
+                self.close
+                break
             game_state['ball'].update(game_state['lplayer'], game_state['rplayer'])
             data = {
                 'type': 'game_state',
@@ -95,3 +100,39 @@ class GameLogicConsumer(AsyncWebsocketConsumer):
     async def game_stats(self, event):
         data = event['data']
         await self.send(text_data=json.dumps(data))
+
+    async def endTheGame(self):
+        game_state = self.__class__.playing_rooms[self.room_group_name]
+        room = await self.get_room(self.room_name)
+        player1 = room.player1
+        player2 = room.player2
+        if gameOver(game_state['lplayer'] ,game_state['rplayer'] ) is game_state['lplayer']:
+            self.winner = player1
+            self.winner = player2
+            
+        if gameOver(game_state['lplayer'] ,game_state['rplayer'] ) is game_state['rplayer']:
+            self.winner = player2
+            self.loser = player1
+
+        room.winner = self.winner
+        await sync_to_async(room.save)()
+
+        data = {
+            'type': 'game_over',
+            'action': 'game_over',
+            'winner': self.winner,
+            'losser' : self.loser
+        }
+
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                'type': 'game_over',
+                'data': data,
+            }
+        )
+
+    async def game_over(self, event):
+        data = event['data']
+        await self.send(text_data=json.dumps(data))
+ 

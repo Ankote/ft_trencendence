@@ -180,14 +180,26 @@ def resetBall(ball):
 def moveBot(paddle, ball):
     paddle.y = ball.y - paddle.height / 2
 
-def gameOver(player1, player2):
-     return player1.score == 10 or player2.score == 10
+def gameOver(player1, player2, winScore):
+    if player1.score == winScore:
+        return player1
+    elif player2.score == winScore:
+        return player2
+    else :
+        return None
 
 def resetPlayers(player, opponent):
      player.y = Table.height / 2 - PLAYER_HEIGHT / 2
      player.score = 0
      opponent.y = Table.height / 2 - PLAYER_HEIGHT / 2
      opponent.score = 0
+
+def gameOver(player1, player2):
+    if player1.score >= 10 and player1.score - player2.score >= 2:
+        return player1
+    elif player2.score >= 10 and player2.score - player1.score >= 2:
+        return player2
+    return None
 
 #instiate objects
 # player = Player()

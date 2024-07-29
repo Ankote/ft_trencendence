@@ -26,21 +26,28 @@ function startGame(room_name)
 		}));
 	});
 
-	// const cnv = document.getElementById("canvas");
 	gameSocket.onmessage = function(event)
 	{
 		console.log("mouseMove")
 		let data = JSON.parse(event.data);								
 		if( data.action == 'changes')
 		{
-			// const gameData = data
 			player 			= data.player;
 			opponent	 	= data.opponent;
 			net 			= data.net;;
 			ball 			= data.ball;
-			// console.log(player)
 			table 			= data.table;
 			render()
+		}
+		if( data.action == 'game_over')
+		{
+			console.log(data.winner)
+			console.log(data.losser)
+			console.log(ID)
+			if (data.winner == ID)
+					changeContent(winning())
+			else
+				changeContent(lossing())
 		}
 	}
 }
@@ -112,6 +119,26 @@ function leavingGame()
    		 </div>
     `;
 }
+
+function winning()
+{
+	// console.log("wewwewew")
+	return `
+         <div class="victory-message">
+        <h1>You Win!</h1>
+   		 </div>
+    `;
+}
+function lossing()
+{
+	// console.log("wewwewew")
+	return `
+         <div class="victory-message">
+        <h1>You lose!</h1>
+   		 </div>
+    `;
+}
+
 
 function gamePage(room_name)
 {
