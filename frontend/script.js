@@ -45,9 +45,9 @@ function startGame(room_name)
 			console.log(data.losser)
 			console.log(ID)
 			if (data.winner == ID)
-					changeContent(winning())
+					changeContent(winning(data))
 			else
-				changeContent(lossing())
+				changeContent(lossing(data))
 		}
 	}
 }
@@ -113,30 +113,38 @@ function leavingGame()
 {
 	// console.log("wewwewew")
 	return `
-         <div class="victory-message">
-        <h1>Opponent Gave Up</h1>
-        <p>You Win!</p>
-   		 </div>
-    `;
+	<div class="victory-message">
+		<h1>You Win!</h1>
+		<p>Congratulations, ${data.winner}!</p>
+		<p>Your Score: ${data.winnerScore}</p>
+	</div>
+`;
 }
 
-function winning()
+function winning(data)
 {
 	// console.log("wewwewew")
 	return `
-         <div class="victory-message">
-        <h1>You Win!</h1>
-   		 </div>
-    `;
+	<div class="victory-message">
+		<h1>You Win!</h1>
+		<p>Congratulations, ${data.winner}!</p>
+		<p>${data.winner}: ${data.winnerScore}</p>
+		<p>${data.loser}: ${data.loserScore}</p>
+	</div>
+`;
 }
-function lossing()
+function lossing(data)
 {
 	// console.log("wewwewew")
+
 	return `
-         <div class="victory-message">
-        <h1>You lose!</h1>
-   		 </div>
-    `;
+	<div class="victory-message">
+		<h1>You Lose!</h1>
+		<p>Good luck next time, ${data.loser}!</p>
+		<p>${data.winner}: ${data.winnerScore}</p>
+		<p>${data.loser}: ${data.loserScore}</p>
+	</div>
+`;
 }
 
 

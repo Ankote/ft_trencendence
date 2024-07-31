@@ -127,22 +127,24 @@ class GameLogicConsumer(AsyncWebsocketConsumer):
         if gameOver(game_state['lplayer'] ,game_state['rplayer'] ) is game_state['lplayer']:
             self.winner = player1.username
             self.loser = player2.username
-            # await self.save_match_stats(game_state['lplayer'].score, game_state['rplayer'].score)
-            await self.mark_room_inactive()
+            self.winnerScore = game_state['lplayer'].score
+            self.loserScore = game_state['rplayer'].score
+            await self.save_match_stats(game_state['lplayer'].score, game_state['rplayer'].score)
+
         if gameOver(game_state['lplayer'] ,game_state['rplayer'] ) is game_state['rplayer']:
             self.winner = player2.username
             self.loser = player1.username
-            # await self.save_match_stats(game_state['lplayer'].score, game_state['rplayer'].score)
-            await self.mark_room_inactive()
-
-        # room.winner = self.winner
-        await sync_to_async(room.save)()
+            self.winnerScore = game_state['rplayer'].score
+            self.loserScore = game_state['lplayer'].score
+            await self.save_match_stats(game_state['lplayer'].score, game_state['rplayer'].score)
 
         data = {
             'type': 'game_over',
             'action': 'game_over',
             'winner': self.winner,
-            'losser' : self.loser
+            'loser' : self.loser,
+            'winnerScore' : self.winnerScore,
+            'loserScore' : self.loserScore
         }
 
         await self.channel_layer.group_send(
