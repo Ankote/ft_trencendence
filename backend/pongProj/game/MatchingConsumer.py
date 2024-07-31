@@ -3,7 +3,7 @@ import asyncio
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
 from django.db.models import Q
-from .models import User, Room
+from .models import User, singleMatch
 import time
 
 class MatchmakingConsumer(AsyncWebsocketConsumer):
@@ -56,17 +56,17 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
     async def match_players(self):
         if len(self.__class__.waiting_players) >= 2:
             print("Matching players.")
-            player1 = self.__class__.waiting_players.pop(0)
-            player2 = self.__class__.waiting_players.pop(0)
+            player1 = await self.get_player_obj(self.__class__.waiting_players.pop(0)) 
+            player2 = await self.get_player_obj(self.__class__.waiting_players.pop(0))
             room_name = await self.generate_unique_room_name()
 
-            player1_channel = await self.get_channel_name(player1)
-            player2_channel = await self.get_channel_name(player2)
+            player1_channel = await self.get_channel_name(player1.username)
+            player2_channel = await self.get_channel_name(player2.username)
 
             await self.channel_layer.group_add(room_name, player1_channel)
             await self.channel_layer.group_add(room_name, player2_channel)
 
-            await self.create_room(room_name, player1, player2)
+            await self.create_room(room_name,player1, player2)
 
             await self.channel_layer.group_send(
                 room_name,
@@ -85,11 +85,11 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def room_exists(self, room_name):
-        return Room.objects.filter(name=room_name).exists()
+        return singleMatch.objects.filter(name=room_name).exists()
 
     @sync_to_async
     def create_room(self, room_name, player1, player2):
-        Room.objects.create(
+        singleMatch.objects.create(
             name=room_name,
             player1=player1,
             player2=player2,
@@ -102,14 +102,14 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 
     @sync_to_async
     def is_player_in_active_game(self, username):
-        return Room.objects.filter(
-            Q(player1=username, is_active=True) | Q(player2=username, is_active=True)
+        return singleMatch.objects.filter(
+            Q(player1__username=username, is_active=True) | Q(player2__username=username, is_active=True)
         ).exists()
 
     @sync_to_async
     def mark_room_inactive(self):
-        room = Room.objects.filter(
-            Q(player1=self.user.username) | Q(player2=self.user.username),
+        room = singleMatch.objects.filter(
+            Q(player1__username=self.user.username) | Q(player2__username=self.user.username),
             is_active=True
         ).first()
         if room:
@@ -120,9 +120,22 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
     
     @sync_to_async 
     def get_player_room(self):
-        room = Room.objects.filter(
-            Q(player1=self.user.username, is_active=True) | Q(player2=self.user.username, is_active=True) ).first()
+        room = singleMatch.objects.filter(
+            Q(player1__username=self.user.username, is_active=True) | Q(player2__username=self.user.username, is_active=True) ).first()
         return room.name
+    
+    async def start_game(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'start_game',
+            'room_name': event['room_name'],
+            'status': 'start_game'
+        }))
+
+    @sync_to_async 
+    def get_player_obj(self, username):
+        user = User.objects.filter(
+            Q(username=username)).first()
+        return user
     
     async def start_game(self, event):
         await self.send(text_data=json.dumps({

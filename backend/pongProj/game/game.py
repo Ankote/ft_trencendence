@@ -195,9 +195,9 @@ def resetPlayers(player, opponent):
      opponent.score = 0
 
 def gameOver(player1, player2):
-    if player1.score >= 10 and player1.score - player2.score >= 2:
+    if player1.score >= 2 and player1.score - player2.score >= 2:
         return player1
-    elif player2.score >= 10 and player2.score - player1.score >= 2:
+    elif player2.score >= 2 and player2.score - player1.score >= 2:
         return player2
     return None
 
