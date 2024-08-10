@@ -78,10 +78,11 @@ class singleMatch(models.Model):
         return 'match1_' + str(self.id)
 
 class Tournament(models.Model):
+    name = models.CharField(max_length=255, unique=True)
     start_date = models.DateTimeField(auto_now=True)
-    end_date = models.DateTimeField()
-    status = models.IntegerField()
-    maxPlayers = models.IntegerField()
+    end_date = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+    maxPlayers = models.IntegerField(default=4)
 
     def __str__(self) -> str:
         return 'tournament_' + str(self.id)

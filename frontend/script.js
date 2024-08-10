@@ -8,111 +8,98 @@ let table = {}
 let ctx
 
 
-function startGame(room_name)
-{
-	let url = `ws://127.0.0.1:8000/ws/game/${room_name}/${ID}/`;
+function startGame(room_name) {
+    let url = `ws://127.0.0.1:8000/ws/game/${room_name}/${ID}/`;
 
-	const gameSocket = new WebSocket(url);
-	changeContent(gamePage(room_name))
-	const canv = document.getElementById("canvas");
-	ctx = canv.getContext("2d");
+    const gameSocket = new WebSocket(url);
+    changeContent(gamePage(room_name))
+    const canv = document.getElementById("canvas");
+    ctx = canv.getContext("2d");
 
-	canv.addEventListener("mousemove", (event) => {
-		let rect = canv.getBoundingClientRect();
-		gameSocket.send(JSON.stringify({
-			'action': 'moved',
-			'rect': rect,
-			'clientY': event.clientY
-		}));
-	});
+    canv.addEventListener("mousemove", (event) => {
+        let rect = canv.getBoundingClientRect();
+        gameSocket.send(JSON.stringify({
+            'action': 'moved',
+            'rect': rect,
+            'clientY': event.clientY
+        }));
+    });
 
-	gameSocket.onmessage = function(event)
-	{
-		console.log("mouseMove")
-		let data = JSON.parse(event.data);								
-		if( data.action == 'changes')
-		{
-			player 			= data.player;
-			opponent	 	= data.opponent;
-			net 			= data.net;;
-			ball 			= data.ball;
-			table 			= data.table;
-			render()
-		}
-		if( data.action == 'game_over')
-		{
-			console.log(data.winner)
-			console.log(data.losser)
-			console.log(ID)
-			if (data.winner == ID)
-					changeContent(winning(data))
-			else
-				changeContent(lossing(data))
-		}
-	}
+    gameSocket.onmessage = function(event) {
+        console.log("mouseMove")
+        let data = JSON.parse(event.data);
+        if (data.action == 'changes') {
+            player = data.player;
+            opponent = data.opponent;
+            net = data.net;;
+            ball = data.ball;
+            table = data.table;
+            render()
+        }
+        if (data.action == 'game_over') {
+            console.log(data.winner)
+            console.log(data.losser)
+            console.log(ID)
+            if (data.winner == ID)
+                changeContent(winning(data))
+            else
+                changeContent(lossing(data))
+        }
+    }
 }
 
-function matchMakingHandling()
-{
-	let url = `ws://127.0.0.1:8000/ws/socket-server/` + ID + '/'
+function matchMakingHandling() {
+    let url = `ws://127.0.0.1:8000/ws/socket-server/` + ID + '/'
 
-	const matchingSocket = new WebSocket(url);
+    const matchingSocket = new WebSocket(url);
 
-	matchingSocket.onopen = function(event)
-	{
-		matchingSocket.send(JSON.stringify({
-			'id' : ID,
-			'username' : username
-		})
-		)
-		// console.log("socket connected")
-	};
+    matchingSocket.onopen = function(event) {
+        matchingSocket.send(JSON.stringify({
+                'id': ID,
+                'username': username
+            }))
+            // console.log("socket connected")
+    };
 
-	matchingSocket.onmessage = function(event)
-	{
-		let data = JSON.parse(event.data);
-		// console.log(data.room_name)
-		if( data.status == 'start_game')
-		{
+    matchingSocket.onmessage = function(event) {
+        let data = JSON.parse(event.data);
+        // console.log(data.room_name)
+        if (data.status == 'start_game') {
 
-			startGame(data.room_name)
-				
-		}
-		// console.log(data.status)
-		if( data.status == 'leaving')
-		{
-			changeContent(leavingGame())
-				
-		}
-		if( data.status == 'changes')
-		{
-			const gameData = data.data
-			// console.log(gameData)
-				
-		}
-	};
+            startGame(data.room_name)
+
+        }
+        // console.log(data.status)
+        if (data.status == 'leaving') {
+            changeContent(leavingGame())
+
+        }
+        if (data.status == 'changes') {
+            const gameData = data.data
+                // console.log(gameData)
+
+        }
+    };
 }
-	
+
 
 document.open();
-function changeContent(newContent)
-{
-	document.getElementById('page').innerHTML = newContent;
+
+function changeContent(newContent) {
+    document.getElementById('page').innerHTML = newContent;
 };
 
-function loginPage()
-{
-	return `
+function loginPage() {
+    return `
         <input type="text" id = "ID" class="form-input" placeholder="Enter ID" required>
         <input type="text" id = "username" class="form-input" placeholder="Enter Username" required>
         <button class="submit-button" id= 'login'>Submit</button>
     `;
 }
 
-function leavingGame()
-{
-	// console.log("wewwewew")
-	return `
+function leavingGame() {
+    // console.log("wewwewew")
+    return `
 	<div class="victory-message">
 		<h1>You Win!</h1>
 		<p>Congratulations, ${data.winner}!</p>
@@ -121,10 +108,9 @@ function leavingGame()
 `;
 }
 
-function winning(data)
-{
-	// console.log("wewwewew")
-	return `
+function winning(data) {
+    // console.log("wewwewew")
+    return `
 	<div class="victory-message">
 		<h1>You Win!</h1>
 		<p>Congratulations, ${data.winner}!</p>
@@ -133,11 +119,11 @@ function winning(data)
 	</div>
 `;
 }
-function lossing(data)
-{
-	// console.log("wewwewew")
 
-	return `
+function lossing(data) {
+    // console.log("wewwewew")
+
+    return `
 	<div class="victory-message">
 		<h1>You Lose!</h1>
 		<p>Good luck next time, ${data.loser}!</p>
@@ -148,24 +134,33 @@ function lossing(data)
 }
 
 
-function gamePage(room_name)
-{
+function gamePage(room_name) {
 
-	return `
+    return `
            <canvas id='canvas' style="background : black;" width="600" height="400"></canvas>
     `;
 }
-function matchMakingPage()
-{
 
-	let content = '<div class="button-container"> <button class="game-button" id="oneVSone">1 vs 1</button> <button class="game-button play-bot-button">Play with Bot</button></div>'
-	return (content)
+function matchMakingPage() {
+
+
+    return `
+		 
+	<div class="button-container">
+		<button class="game-button" id="oneVSone">1 vs 1</button>
+		<button class="game-button play-bot-button">Play with Bot</button>
+		<button class="game-button play-bot-button" id="tournament">Play Tournament</button>
+	</div>'
+	`
 };
 
-function waitingOpponent()
-{
-	let content = '<div class="waiting-container"> <div class="waiting-text">Waiting For  Opponent . . .</div> </div>'
-	return (content)
+function watingPlayers() {
+
+    return `
+		<div class="waiting-container">
+			<div class="waiting-text">Waiting For  other Players . . .</div>
+		</div>
+	`
 }
 
 changeContent(loginPage());
@@ -174,32 +169,72 @@ let ID = ""
 let username = ""
 data = {}
 
-document.addEventListener("click", event=>{
-	let oneVSoneBtn = document.getElementById('oneVSone')
-	let loginBtn = document.getElementById('login')
+function matchTournament() {
 
-	if(loginBtn)
-	{
-		loginBtn.onclick = function display()
-		{
-			ID = document.getElementById('ID').value;
-			username = document.getElementById('username').value;
-			changeContent(matchMakingPage())
+    let url = `ws://127.0.0.1:8000/ws/tournament/` + ID + '/'
 
-		};
-	}
+    const matchingSocket = new WebSocket(url);
 
-	if (oneVSoneBtn)
-	{
-		oneVSoneBtn.onclick = function display()
-		{
-			if (ID != "")
-				changeContent(waitingOpponent());
-				matchMakingHandling();
-				// console.log("id : " + ID + " username : " + username)
-		};
+    matchingSocket.onopen = function(event) {
+        matchingSocket.send(JSON.stringify({
+            'id': ID,
+            'username': username
+        }))
+    };
 
-	}
+    // matchingSocket.onmessage = function(event) {
+    //     let data = JSON.parse(event.data);
+    //     // console.log(data.room_name)
+    //     if (data.status == 'start_game') {
+
+    //         startGame(data.room_name)
+
+    //     }
+    //     // console.log(data.status)
+    //     if (data.status == 'leaving') {
+    //         changeContent(leavingGame())
+
+    //     }
+    //     if (data.status == 'changes') {
+    //         const gameData = data.data
+    //             // console.log(gameData)
+
+    //     }
+    // };
+};
+
+document.addEventListener("click", event => {
+    let oneVSoneBtn = document.getElementById('oneVSone')
+    let loginBtn = document.getElementById('login')
+    let tourBtn = document.getElementById('tournament')
+
+    if (loginBtn) {
+        loginBtn.onclick = function display() {
+            ID = document.getElementById('ID').value;
+            username = document.getElementById('username').value;
+            changeContent(matchMakingPage())
+
+        };
+    }
+
+    if (oneVSoneBtn) {
+        oneVSoneBtn.onclick = function display() {
+            if (ID != "") {
+                changeContent(waitingOpponent());
+                matchMakingHandling();
+            }
+            // console.log("id : " + ID + " username : " + username)
+        };
+    }
+    if (tourBtn) {
+        tourBtn.onclick = function display() {
+            if (ID != "") {
+                changeContent(watingPlayers());
+                matchTournament();
+
+            }
+        };
+    }
 
 })
 
@@ -236,20 +271,19 @@ function drawPlayer(player) {
 }
 
 
-function render()
-{
-	// Clear the cenves
-		drawRect(0, 0, table.width, table.height , "BLACK");
-		// Draw Net
-		drawNet();
-		//Drawthe ball
-		drawBall(ball.x, ball.y, ball.radius, ball.color)
-		//Draw players
-		drawPlayer(opponent)
-		drawPlayer(player)
-		//display scors
-		drawText(player.score, (table.width / 4.7), table.height / 5, "purple")
-		drawText(opponent.score, (table.width / 4.2) * 3, table.height / 5, "purple")
+function render() {
+    // Clear the cenves
+    drawRect(0, 0, table.width, table.height, "BLACK");
+    // Draw Net
+    drawNet();
+    //Drawthe ball
+    drawBall(ball.x, ball.y, ball.radius, ball.color)
+        //Draw players
+    drawPlayer(opponent)
+    drawPlayer(player)
+        //display scors
+    drawText(player.score, (table.width / 4.7), table.height / 5, "purple")
+    drawText(opponent.score, (table.width / 4.2) * 3, table.height / 5, "purple")
 }
 
 
