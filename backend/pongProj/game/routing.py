@@ -7,5 +7,5 @@ from . import tournamentoConsumer
 websocket_urlpatterns = [
     re_path(r'ws/socket-server/(?P<user_id>\w+)/$', MatchingConsumer.MatchmakingConsumer.as_asgi()),
     re_path(r'ws/game/(?P<room_name>\w+)/(?P<username>\w+)/$', GameLogicConsumer.GameLogicConsumer.as_asgi()),
-    re_path(r'ws/tournament/(?P<room_name>\w+)/$', tournamentoConsumer.TournamentConsumer.as_asgi()),
+    re_path(r'ws/tournament/(?P<nickname>\w+)/$', tournamentoConsumer.TournamentConsumer.as_asgi()),
 ]

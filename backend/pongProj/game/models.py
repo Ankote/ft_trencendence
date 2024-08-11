@@ -127,6 +127,9 @@ class userTournament(models.Model):
 
     user_tournament_name = models.CharField(max_length=200)
 
+    class Meta:
+        unique_together = ('user', 'tournament')
+
     def __str__(self) -> str:
         return 'userTournament_' + str(self.id)
 
