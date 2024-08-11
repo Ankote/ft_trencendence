@@ -8,12 +8,12 @@ from django.db.models import Q
 class TournamentConsumer(AsyncWebsocketConsumer):
     waiting_players = []
     channel_name_map = {}
+    nickname_map = {}
     room_name = ""
 
     async def connect(self):
         self.user = self.scope["user"]
         self.nickname = self.scope['url_route']['kwargs']['nickname']
-        print(self.nickname )
         await self.accept()  # Accept the WebSocket connection
         print("Matching players.")
         
@@ -22,15 +22,15 @@ class TournamentConsumer(AsyncWebsocketConsumer):
             await self.create_tournament(self.__class__.room_name)
             print(self.__class__.room_name)
             print("Matching players.")
-            await self.channel_layer.group_add(self.__class__.room_name, self.channel_name)
-            await self.channel_layer.group_send(
-                self.__class__.room_name ,
-                {
-                    'type': 'tournament_created',
-                    'status' : "waiting"
-                }
-            )
         
+        await self.channel_layer.group_add(self.__class__.room_name, self.channel_name)
+        await self.channel_layer.group_send(
+            self.__class__.room_name ,
+            {
+                'type': 'tournament_created',
+                'status' : "waiting"
+            }
+        )
         await self.add_to_waiting_list()
         await self.match_Players()
 
@@ -38,6 +38,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         if self.user.username in self.__class__.waiting_players:
             self.__class__.waiting_players.remove(self.user.username)
             del self.__class__.channel_name_map[self.user.username]
+            del self.__class__.nickname_map[self.user.username]
 
     async def receive(self, text_data):
         data = json.loads(text_data)
@@ -52,11 +53,27 @@ class TournamentConsumer(AsyncWebsocketConsumer):
             print("players joined")
             for player in self.__class__.waiting_players:
                 player_obj = await self.get_player_obj(player)
-                await self.tournament_add_Player(player_obj, tour_obj)
-                pass
-            pass
+                player_nickname = self.__class__.nickname_map[player]
+                await self.tournament_add_Player(player_obj, tour_obj, player_nickname)
+            
+            await self.channel_layer.group_send(
+                self.__class__.room_name ,
+                {
+                    'type'   :  'start_game',
+                    'room_name' :  self.__class__.room_name,
+                    'status' : 'start_game',
+                    # 'players' :  self.__class__.nickname_map
+                })
+              
+    async def start_game(self, event):
+        await self.send(text_data=json.dumps({
+            'status': event['status'],
+            'room_name': event['room_name'],
+        }))
+  
     async def add_to_waiting_list(self):
         self.__class__.channel_name_map[self.user.username] = self.channel_name
+        self.__class__.nickname_map[self.user.username] = self.nickname
         self.__class__.waiting_players.append(self.user.username)
 
     async def create_tournamentRoom(self):
@@ -73,12 +90,13 @@ class TournamentConsumer(AsyncWebsocketConsumer):
         )  
 
     @sync_to_async
-    def tournament_add_Player(self, player, tour):
+    def tournament_add_Player(self, player, tour, nickname):
         userTournament.objects.create(
             user = player,
             tournament = tour,
-            user_tournament_name = self.nickname
+            user_tournament_name = nickname
         )
+        print (f"nick: {self.nickname}")
 
     @sync_to_async
     def room_exists(self, room_name):

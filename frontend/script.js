@@ -6,7 +6,7 @@ let ball = {}
 let table = {}
 let ctx
 
-function startGame(room_name) {
+function startGame(players) {
     let url = `ws://127.0.0.1:8000/ws/game/${room_name}/${ID}/`;
 
     const gameSocket = new WebSocket(url);
@@ -144,6 +144,15 @@ function gamePage(room_name) {
     `;
 }
 
+function TournamentPlayersPage() {
+
+
+    return `
+    <h1>Players in Tournament</h1>
+    <div id="playersList"></div>
+	`
+};
+
 function matchMakingPage() {
 
 
@@ -172,6 +181,7 @@ let ID = ""
 let username = ""
 let nickname = ""
 data = {}
+let players = {}
 
 function matchTournament(nickname) {
     console.log(nickname)
@@ -190,13 +200,28 @@ function matchTournament(nickname) {
         console.log("message recieved")
 
         let data = JSON.parse(event.data);
+        console.log(data)
         if (data.status == 'waiting') {
 
             console.log("waiting")
         }
+        if (data.status == 'start_game') {
+
+            players = data.players
+            changeContent(TournamentPlayersPage())
+            logicTournament(data.room_name);
+        }
     };
 };
 
+function logicTournament(room_name) {
+    let url = `ws://127.0.0.1:8000/ws/tournamentLogic/` + room_name + '/'
+    const tournamentLogicSocket = new WebSocket(url);
+    tournamentLogicSocket.onopen = function(event) {
+        console.log("connection stablished logic")
+    };
+
+}
 document.addEventListener("click", event => {
     let oneVSoneBtn = document.getElementById('oneVSone')
     let loginBtn = document.getElementById('login')
