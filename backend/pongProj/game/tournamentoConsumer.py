@@ -49,7 +49,7 @@ class TournamentConsumer(AsyncWebsocketConsumer):
 
     async def match_Players(self):
         tour_obj = await self.get_tour_obj(self.__class__.room_name)
-        if len(self.__class__.waiting_players) == 4:
+        if len(self.__class__.waiting_players) == 2:
             print("players joined")
             for player in self.__class__.waiting_players:
                 player_obj = await self.get_player_obj(player)
