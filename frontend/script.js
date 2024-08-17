@@ -101,6 +101,18 @@ function JoinTournamentPage() {
     `;
 }
 
+function choiseTournamentPage() {
+    return `
+        <div class="container">
+            <div class="button-container">
+                <button class="btn" id="tour4">Tournament 4 Players</button>
+                <button class="btn" id="tour8">Tournament 8 Players</button>
+                <button class="btn" id="tour16">Tournament 16 Players</button>
+            </div>
+        </div>
+    `;
+}
+
 function leavingGamePage() {
     // console.log("wewwewew")
     return `
@@ -182,10 +194,10 @@ let username = ""
 let nickname = ""
 data = {}
 let players = {}
+let type = ""
 
-function matchTournament(nickname) {
-    console.log(nickname)
-    let url = `ws://127.0.0.1:8000/ws/tournament/` + nickname + '/'
+function matchTournament() {
+    let url = `ws://127.0.0.1:8000/ws/tournament/` + type + '/'
     const tounamentSockcet = new WebSocket(url);
 
     tounamentSockcet.onopen = function(event) {
@@ -214,6 +226,7 @@ function matchTournament(nickname) {
     };
 };
 
+
 function logicTournament(room_name) {
     let url = `ws://127.0.0.1:8000/ws/tournamentLogic/` + room_name + '/'
     const tournamentLogicSocket = new WebSocket(url);
@@ -226,7 +239,10 @@ document.addEventListener("click", event => {
     let oneVSoneBtn = document.getElementById('oneVSone')
     let loginBtn = document.getElementById('login')
     let tourBtn = document.getElementById('tournament')
-    let joinBtn = document.getElementById('join')
+    let tour4 = document.getElementById('tour4')
+    let tour8 = document.getElementById('tour8')
+    let tour16 = document.getElementById('tour16')
+        // let joinBtn = document.getElementById('join')
 
     if (loginBtn) {
         loginBtn.onclick = function display() {
@@ -236,7 +252,6 @@ document.addEventListener("click", event => {
 
         };
     }
-
     if (oneVSoneBtn) {
         oneVSoneBtn.onclick = function display() {
             if (ID != "") {
@@ -249,23 +264,44 @@ document.addEventListener("click", event => {
     if (tourBtn) {
         tourBtn.onclick = function display() {
             if (ID != "") {
-                changeContent(JoinTournamentPage());
-
+                changeContent(choiseTournamentPage());
             }
         };
     }
-    if (joinBtn) {
-        joinBtn.onclick = function display() {
-            if (ID != "") {
-                console.log("ayooow")
-                nickname = document.getElementById('nickname').value;
-                console.log("hi : " + document.getElementById('nickname').value)
-                changeContent(watingPlayersPage());
-                matchTournament(nickname);
-
-            }
-        };
+    if (tour4) {
+        tour4.onclick = function setType() {
+            type = "tour4"
+            changeContent(JoinTournamentPage());
+            matchTournament();
+        }
     }
+
+    if (tour8) {
+        tour8.onclick = function setType() {
+            type = "tour8"
+            changeContent(JoinTournamentPage());
+            matchTournament();
+        }
+    }
+    if (tour16) {
+        tour16.onclick = function setType() {
+            type = "tour16"
+            changeContent(JoinTournamentPage());
+            matchTournament();
+        }
+    }
+    // if (joinBtn) {
+    //     joinBtn.onclick = function display() {
+    //         if (ID != "") {
+    //             console.log("ayooow")
+    //             nickname = document.getElementById('nickname').value;
+    //             console.log("hi : " + document.getElementById('nickname').value)
+    //             changeContent(watingPlayersPage());
+    //             matchTournament(nickname);
+
+    //         }
+    //     };
+    // }
 
 })
 

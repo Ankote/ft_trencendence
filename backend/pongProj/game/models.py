@@ -124,6 +124,7 @@ class userTournament(models.Model):
         Tournament,
         on_delete=models.CASCADE,
     )
+    is_active = models.BooleanField(default=True)
 
     user_tournament_name = models.CharField(max_length=200)
 
