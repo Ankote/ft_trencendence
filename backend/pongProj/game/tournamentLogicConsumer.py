@@ -1,4 +1,5 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
+import json
 
 class TournamentLogicConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -8,3 +9,8 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
         print(f"type : {self.tourType}")
         pass
 
+    async def receive(self, text_data):
+        print("message recieved")
+        text_data_json = json.loads(text_data)
+        print(text_data_json)
+        pass
