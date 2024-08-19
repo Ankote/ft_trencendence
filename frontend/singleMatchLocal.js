@@ -6,13 +6,14 @@ let net = {}
 let ball = {}
 let table = {}
 
-export function update(Sockcet)
-{
-      
-   
-    Sockcet.send(JSON.stringify({
-        'key': key
-    }))
+function update(Sockcet)
+{  
+    document.addEventListener("keydown", (event) => {  
+        console.log("key  : " + event.key)      
+        Sockcet.send(JSON.stringify({
+            'key': event.key
+        }))
+    });
 }
 
 export function singleMatchHandle()
@@ -25,7 +26,7 @@ export function singleMatchHandle()
         console.log("connecting")
         utils.changeContent(page.gamePage())
     }
-
+    update(matchtSockcet)
     matchtSockcet.onmessage = function(event){
         let data = JSON.parse(event.data);
         let game_state = data.game_state

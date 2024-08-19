@@ -17,7 +17,22 @@ class SingleMatchLocalConsumer(AsyncWebsocketConsumer):
         asyncio.create_task(self.send_data_periodically())
         pass
 
-    async def receive(self):
+    async def receive(self, text_data):
+        text_data_json = json.loads(text_data)
+        key = text_data_json.get('key')
+        if key == 'ArrowUp' :
+            self.game_state['rplayer'].y -= 10
+            pass
+        if key == 'ArrowDown':
+            self.game_state['rplayer'].y += 10
+            pass
+        if key == 'w':
+            self.game_state['lplayer'].y-= 10
+            pass
+        if key == 's':
+            self.game_state['lplayer'].y+= 10
+            pass
+
         pass
 
     async def disconnect(self, close_code):
@@ -28,11 +43,11 @@ class SingleMatchLocalConsumer(AsyncWebsocketConsumer):
     async def send_data_periodically(self):
 
         while True:
-            if  gameOver(self.game_state['lplayer'] ,self.game_state['rplayer'] ) is  not None:
-                await self.endTheGame()
-                print("gameover")
-                self.close
-                break
+            # if  gameOver(self.game_state['lplayer'] ,self.game_state['rplayer'] ) is  not None:
+            #     await self.endTheGame()
+            #     print("gameover")
+            #     self.close
+            #     break
             self.game_state['ball'].update(self.game_state['lplayer'], self.game_state['rplayer'])
             data = {
                 'lplayer': self.game_state['lplayer'].to_dict(),

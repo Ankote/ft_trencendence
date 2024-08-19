@@ -38,7 +38,6 @@ function startGame(data) {
     }
 }
 
-
 export function matchMakingHandling() {
     let url = `ws://127.0.0.1:8000/ws/socket-server/` + ID + '/'
 

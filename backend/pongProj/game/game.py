@@ -201,6 +201,8 @@ def gameOver(player1, player2):
         return player2
     return None
 
+def movePlayer(key, lplaye, rplayer):
+    pass
 #instiate objects
 # player = Player()
 # opponent = Opponent()
