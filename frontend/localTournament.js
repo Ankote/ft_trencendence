@@ -11,6 +11,10 @@ function matchTournament(type) {
 
     tounamentSockcet.onmessage = function(event) {
         console.log("message recieved")
+        let data = JSON.parse(event.data);
+        if (data.message == "userFound")
+            console.log("user allready exist")
+        //here handel dublicated users
 
     }
     userJoin(tounamentSockcet)

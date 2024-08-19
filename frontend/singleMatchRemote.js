@@ -5,8 +5,6 @@ function startGame(data) {
 
     const gameSocket = new WebSocket(url);
     utils.changeContent(gamePage(data))
-    const canv = document.getElementById("canvas");
-    ctx = canv.getContext("2d");
 
     canv.addEventListener("mousemove", (event) => {
         let rect = canv.getBoundingClientRect();
@@ -23,7 +21,7 @@ function startGame(data) {
         if (data.action == 'changes') {
             player = data.player;
             opponent = data.opponent;
-            net = data.net;;
+            net = data.net;
             ball = data.ball;
             table = data.table;
             utils.render()

@@ -1,13 +1,9 @@
 // Draw shapes & text functions
 
 export function changeContent(newContent) {
-    // if (newContent)
-    // document.addEventListener("DOMContentLoaded", function() {
         document.getElementById('page').innerHTML = newContent;
-        console.log("hello")
-    // });
 };
-
+let ctx = null
 function drawRect(x, y, w, h, color) {
     ctx.fillStyle = color;
     ctx.fillRect(x, y, w, h);
@@ -27,7 +23,7 @@ function drawText(text, x, y, color) {
     ctx.fillText(text, x, y);
 }
 
-function drawNet() {
+function drawNet(table, net) {
     for (let i = 0; i <= table.height; i += 15) {
         drawRect(net.x, net.y + i, net.width, net.height, net.color);
     }
@@ -37,19 +33,25 @@ function drawPlayer(player) {
     drawRect(player.x, player.y, player.width, player.height, player.color);
 }
 
-export function render() {
+export function render(lplayer, rplayer, ball, table, net) {
     // Clear the cenves
+    if (!ctx)
+    {
+        const canv = document.getElementById("canvas");
+        if (canv)
+            ctx = canv.getContext("2d");
+    }
     drawRect(0, 0, table.width, table.height, "BLACK");
     // Draw Net
-    drawNet();
+    drawNet(table, net);
     //Drawthe ball
     drawBall(ball.x, ball.y, ball.radius, ball.color)
         //Draw players
-    drawPlayer(opponent)
-    drawPlayer(player)
+    drawPlayer(lplayer)
+    drawPlayer(rplayer)
         //display scors
-    drawText(player.score, (table.width / 4.7), table.height / 5, "purple")
-    drawText(opponent.score, (table.width / 4.2) * 3, table.height / 5, "purple")
+    drawText(lplayer.score, (table.width / 4.7), table.height / 5, "purple")
+    drawText(rplayer.score, (table.width / 4.2) * 3, table.height / 5, "purple")
 }
 
 // Check collision and AI movement can be added here

@@ -61,7 +61,7 @@ export function lossingPage(data) {
 `;
 }
 
-export function gamePage(room_name) {
+export function gamePage() {
 
     return `
            <canvas id='canvas' style="background : black;" width="600" height="400"></canvas>
@@ -85,6 +85,7 @@ export function matchMakingPage() {
 		 
 	<div class="button-container">
 		<button class="game-button" id="oneVSone">1 vs 1</button>
+		<button class="game-button" id="singleLocal">1 vs 1 local</button>
 		<button class="game-button play-bot-button">Play with Bot</button>
 		<button class="game-button play-bot-button" id="tournament">Play Tournament</button>
 	</div>'

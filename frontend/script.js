@@ -3,13 +3,8 @@ import * as page from './pages.js';
 import * as localT from './localTournament.js'
 import {  matchMakingHandling } from './singleMatchRemote.js';
 import * as utils from './utils.js';
+import * as sigleLocal from './singleMatchLocal.js'
 // Select table
-let player = {}
-let opponent = {}
-let net = {}
-let ball = {}
-let table = {}
-let ctx
 
 utils.changeContent(page.loginPage());
 
@@ -21,6 +16,7 @@ let type = ""
 
 document.addEventListener("click", event => {
     let oneVSoneBtn = document.getElementById('oneVSone')
+    let singleBtn = document.getElementById('singleLocal')
     let loginBtn = document.getElementById('login')
     let tourBtn = document.getElementById('tournament')
     let  type 
@@ -36,7 +32,7 @@ document.addEventListener("click", event => {
     if (oneVSoneBtn) {
         oneVSoneBtn.onclick = function display() {
             if (ID != "") {
-                utils.changeContent(waitingOpponent());
+                utils.changeContent(page.watingPlayersPage());
                 matchMakingHandling();
             }
         };
@@ -48,6 +44,15 @@ document.addEventListener("click", event => {
             }
             localT.handelTournament()
         };
+    }
+    if (singleBtn)
+    { 
+        console.log("single")
+        singleBtn.onclick = function display() {
+            sigleLocal.singleMatchHandle();
+        // localT.handelTournament()
+    };
+
     }
     // if (joinBtn) {
     //     joinBtn.onclick = function display() {
@@ -64,3 +69,7 @@ document.addEventListener("click", event => {
 
 })
 
+document.addEventListener("keydown", event => {
+    
+    console.log(event.key)
+})

@@ -154,7 +154,7 @@ class GameLogicConsumer(AsyncWebsocketConsumer):
                 'data': data,
             }
         )
-
+        
     async def game_over(self, event):
         data = event['data']
         # await self.mark_room_inactive()
