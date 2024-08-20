@@ -1,6 +1,7 @@
 PLAYER_HEIGHT 		= 100
 PLAYER_WIDTH 		=	8
 BALL_START_SPEED  	= .5
+PLAYER_SPEED  	= 15
 COMPONRNT_LEV 		= .3
 BALL_DELTA_SPEED  	= .01
 
@@ -94,9 +95,9 @@ class Ball:
         self.velocityX 	=	-5
         self.velocityY	=	5
 
-    def update(self, player, opponent):
-        selectPlayer = player if self.x < Net.x else opponent
-        opponentP = player if self.x > Net.x else opponent
+    def update(self, lplayer, rplayer):
+        selectPlayer = lplayer if self.x < Net.x else rplayer
+        opponentP = lplayer if self.x > Net.x else rplayer
         # print(selectPlayer)
         if collision(self, selectPlayer):
             self.velocityX  =   -   self.velocityX
@@ -106,14 +107,8 @@ class Ball:
             resetBall(self)
             
         if self.x - self.radius > Table.width:
-            player.score += 1
+            lplayer.score += 1
             resetBall(self)
-
-        # if (gameOver(player, opponent)):
-        #     # resetBall(self)
-        #     resetPlayers(player, opponent)
-
-        # print(selectPlayer.y)
         self.x += self.velocityX * self.speed
         self.y += self.velocityY * self.speed
         if self.y - self.radius > Table.height or self.y < 0:
@@ -142,22 +137,13 @@ def collision(ball, player):
     player.top    = player.y
     player.bottom = player.y + player.height
     player.left   = player.x
-    player.right  = player.x + player.width
-    # print(player.y)
-    # print(f"Ball - Top: {ball.top}, Bottom: {ball.bottom}, Left: {ball.left}, Right: {ball.right}")
-    # print(f"Player - Top: {player.top}, Bottom: {player.bottom}, Left: {player.left}, Right: {player.right}")
-
-
+    player.right  = player.x + player.width 
     collision_detected = (
         ball.right > player.left and ball.bottom > player.top
         and ball.left < player.right and ball.top < player.bottom
     )
 
-    # print(f"Collision detected: {collision_detected}")
-    
     return collision_detected
-
-
 
 def alep(a, b, t):
 	return (a + (b - a) * t)
@@ -180,32 +166,33 @@ def resetBall(ball):
 def moveBot(paddle, ball):
     paddle.y = ball.y - paddle.height / 2
 
-def gameOver(player1, player2, winScore):
-    if player1.score == winScore:
-        return player1
-    elif player2.score == winScore:
-        return player2
+def gameOver(lplayer, rplayer, winScore):
+    if lplayer.score == winScore:
+        return lplayer
+    elif rplayer.score == winScore:
+        return rplayer
     else :
         return None
 
-def resetPlayers(player, opponent):
-     player.y = Table.height / 2 - PLAYER_HEIGHT / 2
-     player.score = 0
-     opponent.y = Table.height / 2 - PLAYER_HEIGHT / 2
-     opponent.score = 0
+def resetPlayers(lplayer, rplayer):
+     lplayer.y = Table.height / 2 - PLAYER_HEIGHT / 2
+     lplayer.score = 0
+     rplayer.y = Table.height / 2 - PLAYER_HEIGHT / 2
+     rplayer.score = 0
 
-def gameOver(player1, player2):
-    if player1.score >= 2 and player1.score - player2.score >= 2:
-        return player1
-    elif player2.score >= 2 and player2.score - player1.score >= 2:
-        return player2
+def gameOver(lplayer, rplayer):
+    if lplayer.score >= 2 and lplayer.score - rplayer.score >= 2:
+        return lplayer
+    elif rplayer.score >= 2 and rplayer.score - lplayer.score >= 2:
+        return rplayer
     return None
 
-def movePlayer(key, lplaye, rplayer):
-    pass
-#instiate objects
-# player = Player()
-# opponent = Opponent()
-# ball = Ball()
-# net = Net()
-
+def movePlayer(key, lplayer, rplayer, table):
+    if key == 'ArrowUp' and rplayer.y + PLAYER_HEIGHT -  PLAYER_SPEED > 4:
+        rplayer.y -= PLAYER_SPEED
+    if key == 'ArrowDown' and rplayer.y + PLAYER_SPEED <  table.height -  4:
+        rplayer.y += PLAYER_SPEED
+    if key == 'w' and lplayer.y + PLAYER_HEIGHT -  PLAYER_SPEED > 4:
+        lplayer.y -= PLAYER_SPEED
+    if key == 's' and lplayer.y  + PLAYER_SPEED <  table.height -  4:
+        lplayer.y+= PLAYER_SPEED
