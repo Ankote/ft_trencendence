@@ -29,11 +29,5 @@ export function matchTournament() {
 
             console.log("waiting")
         }
-        if (data.status == 'start_game') {
-
-            players = data.players
-            changeContent(TournamentPlayersPage())
-            logicTournament(data.room_name);
-        }
     };
 };

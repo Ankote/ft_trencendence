@@ -33,7 +33,7 @@ class SingleMatchLocalConsumer(AsyncWebsocketConsumer):
 
         while True:
             if  gameOver(self.game_state['lplayer'] ,self.game_state['rplayer'] ) is  not None:
-                # self.endGame()
+                await self.endGame()
                 self.close
                 break
             self.game_state['ball'].update(self.game_state['lplayer'], self.game_state['rplayer'])
@@ -49,8 +49,12 @@ class SingleMatchLocalConsumer(AsyncWebsocketConsumer):
                     'game_state': data,
                     }))
             await asyncio.sleep(0.009)
-    # def endGame(self):
-    #     pass
+
+    async def endGame(self):
+        await self.send(text_data=json.dumps({
+                'action': 'game_over',
+                }))
+        pass
 
 
     pass

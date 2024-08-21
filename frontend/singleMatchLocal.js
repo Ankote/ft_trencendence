@@ -38,5 +38,8 @@ export function singleMatchHandle()
             table = game_state.table;
             utils.render(lplayer, rplayer,ball, table, net)
         }
+        if (data.action == 'game_over') {
+            console.log("Game over")
+        }
     }
 }

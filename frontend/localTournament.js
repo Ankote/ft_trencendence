@@ -12,12 +12,35 @@ function matchTournament(type) {
     tounamentSockcet.onmessage = function(event) {
         console.log("message recieved")
         let data = JSON.parse(event.data);
-        if (data.message == "userFound")
+        console.log(data)
+        if (data.status == "userFound")
             console.log("user allready exist")
-        //here handel dublicated users
+        if (data.status == 'start_tournament') {
+            console.log("game start_tournament")
+            tounamentSockcet.send(JSON.stringify({
+                'action' : 'start_tournament'
+            }))
+            utils.changeContent(page.TournamentPlayersPage())   
+            tounamentSockcet.send(JSON.stringify({
+                'action' : 'start_match',
+            }))
 
+            let nextBtn = document.getElementById('next')
+            if (nextBtn)
+            { 
+                nextBtn.onclick = function next(){
+                    console.log("frew krew")
+                tounamentSockcet.send(JSON.stringify({
+                    'action' : 'next_match',
+                }))
+
+            }}   
+        }
+        if (data.status == 'start_match') {
+            console.log(data.lplayer +" " + data.rplayer)
+        }
     }
-    userJoin(tounamentSockcet)
+    userJoin(tounamentSockcet)    
 };
 
 function userJoin(socket){
@@ -28,11 +51,12 @@ function userJoin(socket){
             console.log("yew")
             let nicknameField = document.getElementById('nickname')
             socket.send(JSON.stringify({
+                'action' : 'player_joined',
                 'user' : nicknameField.value
             }))
             if (nicknameField)
                 nicknameField.value = ''
-        }
+        }    
     }
 }
 
@@ -41,7 +65,6 @@ export function handelTournament(){
     let tour4 = document.getElementById('tour4')
     let tour8 = document.getElementById('tour8')
     let tour16 = document.getElementById('tour16')
-    let join = document.getElementById('join')
     let type
 
     if (tour4) {
@@ -66,4 +89,15 @@ export function handelTournament(){
             matchTournament(type);
         }
     }
+    // let nextBtn = document.getElementById('next')
+    // console.log(nextBtn)
+    // if (nextBtn)
+    // { 
+    //     console.log("hehe")
+    //     nextBtn.onclick = function join(){
+    //     socket.send(JSON.stringify({
+    //         'action' : 'next_match',
+    //     }))
+
+    // }}
 }

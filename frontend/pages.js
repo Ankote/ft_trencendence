@@ -74,6 +74,7 @@ export function TournamentPlayersPage() {
 
     return `
     <h1>Players in Tournament</h1>
+		<button class="game-button" id="next">next Match</button>
     <div id="playersList"></div>
 	`
 };
