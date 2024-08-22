@@ -193,6 +193,7 @@ def movePlayer(key, lplayer, rplayer, table):
     if key == 'ArrowDown' and rplayer.y + PLAYER_SPEED <  table.height -  4:
         rplayer.y += PLAYER_SPEED
     if key == 'w' and lplayer.y + PLAYER_HEIGHT -  PLAYER_SPEED > 4:
+        print("w")
         lplayer.y -= PLAYER_SPEED
     if key == 's' and lplayer.y  + PLAYER_SPEED <  table.height -  4:
         lplayer.y+= PLAYER_SPEED

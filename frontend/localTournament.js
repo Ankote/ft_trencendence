@@ -54,8 +54,21 @@ function matchTournament(type) {
         if (data.status == 'game_over') {
             tounamentSockcet.send(JSON.stringify({
                 'action' : 'next_match',
-            }))
+            })) 
            console.log("nextMatch")
+        }
+        if (data.status == 'next_tour'){
+            tounamentSockcet.send(JSON.stringify({
+                'action' : 'next_tour',
+            })) 
+
+        }
+        if (data.status == 'tournament_finiched'){
+            console.log("tournament_finiched")
+            tounamentSockcet.send(JSON.stringify({
+                'action' : 'tournament_finiched',
+            })) 
+
         }
     }
     userJoin(tounamentSockcet)    

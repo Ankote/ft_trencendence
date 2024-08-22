@@ -1,6 +1,6 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .game import Player, Ball, Net, Table, PLAYER_WIDTH, PLAYER_HEIGHT, gameOver, movePlayer
-import json, asyncio
+import json, asyncio, copy
 
 class TournamentLogicConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -30,14 +30,7 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
             self.create_matchs()
         if action == "start_match":
             
-            self.game_state = {
-                'ball': Ball(),
-                'net': Net(),
-                'lplayer': Player(1),
-                'rplayer': Player(Table.width - PLAYER_WIDTH - 1),
-                'table': Table(),
-            }
-            self.task = asyncio.create_task(self.send_data_periodically())
+            self.start_match()
         
         if action == "move_player":
 
@@ -51,19 +44,21 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
         
         if (action == "next_match"):
             if self.match_nbr == len (self.tours[self.tour]) :
-                self.matches.clear()
+                self.tour += 1
                 self.create_matchs()
+
+                await self.send(text_data=json.dumps({
+                        'status': 'next_tour',
+                    }))
                 # print(self.players)
             else:
-                self.game_state = {
-                    'ball': Ball(),
-                    'net': Net(),
-                    'lplayer': Player(1),
-                    'rplayer': Player(Table.width - PLAYER_WIDTH - 1),
-                    'table': Table(),
-                }
-            self.task =  asyncio.create_task(self.send_data_periodically())
+                self.start_match()
             pass    
+        if (action == "next_tour"):
+            print(f"Tour number : {self.tour + 1}")
+            self.start_match()
+        if (action == "tournament_finiched"):
+            print("tournament finiched")
         pass
 
     async def start_tournament(self):
@@ -89,7 +84,10 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
         for i in range(0, len(self.players), 2):
             match = self.players[i:i + 2]
             self.matches.append(match)
-        self.tours[len(self.tours)] = self.matches
+        print(self.tour)
+        self.tours[self.tour] = self.tours[self.tour] = copy.deepcopy(self.matches)
+        self.matches.clear()
+        print(self.tours)
 
 
     async def send_data_periodically(self):
@@ -119,7 +117,7 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
 
     async def endGame(self):
         # print(self.tour)
-        print(self.tours)
+        # print(self.tours)
         winner = gameOver(self.game_state['lplayer'] ,self.game_state['rplayer'] )
         if winner == self.game_state['lplayer']:
             self.players.remove(self.tours[self.tour][self.match_nbr][0])
@@ -134,3 +132,17 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
                 'status': 'game_over',
                 }))
         pass
+        if len (self.players ) == 1:
+            await self.send(text_data=json.dumps({
+                    'status': 'tournament_finiched',
+                    }))
+
+    def start_match(self):
+        self.game_state = {
+                    'ball': Ball(),
+                    'net': Net(),
+                    'lplayer': Player(1),
+                    'rplayer': Player(Table.width - PLAYER_WIDTH - 1),
+                    'table': Table(),
+                }
+        self.task =  asyncio.create_task(self.send_data_periodically())
