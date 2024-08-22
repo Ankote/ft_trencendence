@@ -1,5 +1,10 @@
 import * as utils from './utils.js'
 import * as page from './pages.js'
+let lplayer = {}
+let rplayer = {}
+let net = {}
+let ball = {}
+let table = {}
 
 function matchTournament(type) {
     let url = `ws://127.0.0.1:8000/ws/localTournament/` + type + '/'
@@ -8,7 +13,7 @@ function matchTournament(type) {
     tounamentSockcet.onopen = function(event) {
         console.log("connection stablished")
     };
-
+    update(tounamentSockcet)
     tounamentSockcet.onmessage = function(event) {
         console.log("message recieved")
         let data = JSON.parse(event.data);
@@ -20,7 +25,7 @@ function matchTournament(type) {
             tounamentSockcet.send(JSON.stringify({
                 'action' : 'start_tournament'
             }))
-            utils.changeContent(page.TournamentPlayersPage())   
+            utils.changeContent(page.gamePage())   
             tounamentSockcet.send(JSON.stringify({
                 'action' : 'start_match',
             }))
@@ -36,8 +41,21 @@ function matchTournament(type) {
 
             }}   
         }
-        if (data.status == 'start_match') {
-            console.log(data.lplayer +" " + data.rplayer)
+        if (data.status == 'changes') {
+            let game_state = data.game_state
+            lplayer = game_state.lplayer;
+            rplayer = game_state.rplayer;
+            net = game_state.net;;
+            ball = game_state.ball;
+            table = game_state.table;
+            utils.render(lplayer, rplayer,ball, table, net)
+            console.log(game_state.lplayer_name +" " + game_state.rplayer_name)
+        }
+        if (data.status == 'game_over') {
+            tounamentSockcet.send(JSON.stringify({
+                'action' : 'next_match',
+            }))
+           console.log("nextMatch")
         }
     }
     userJoin(tounamentSockcet)    
@@ -58,6 +76,17 @@ function userJoin(socket){
                 nicknameField.value = ''
         }    
     }
+}
+
+function update(Sockcet)
+{  
+    document.addEventListener("keydown", (event) => {  
+        console.log("key  : " + event.key)      
+        Sockcet.send(JSON.stringify({
+            'action'  : "move_player",
+            'key': event.key
+        }))
+    });
 }
 
 export function handelTournament(){
