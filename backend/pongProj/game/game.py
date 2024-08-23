@@ -181,9 +181,9 @@ def resetPlayers(lplayer, rplayer):
      rplayer.score = 0
 
 def gameOver(lplayer, rplayer):
-    if lplayer.score >= 2 and lplayer.score - rplayer.score >= 2:
+    if lplayer.score >= 1: # and lplayer.score - rplayer.score >= 2:
         return lplayer
-    elif rplayer.score >= 2 and rplayer.score - lplayer.score >= 2:
+    elif rplayer.score >= 1: #and rplayer.score - lplayer.score >= 2:
         return rplayer
     return None
 
@@ -193,7 +193,6 @@ def movePlayer(key, lplayer, rplayer, table):
     if key == 'ArrowDown' and rplayer.y + PLAYER_SPEED <  table.height -  4:
         rplayer.y += PLAYER_SPEED
     if key == 'w' and lplayer.y + PLAYER_HEIGHT -  PLAYER_SPEED > 4:
-        print("w")
         lplayer.y -= PLAYER_SPEED
     if key == 's' and lplayer.y  + PLAYER_SPEED <  table.height -  4:
         lplayer.y+= PLAYER_SPEED

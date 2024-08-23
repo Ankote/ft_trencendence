@@ -13,7 +13,6 @@ function matchTournament(type) {
     tounamentSockcet.onopen = function(event) {
         console.log("connection stablished")
     };
-    update(tounamentSockcet)
     tounamentSockcet.onmessage = function(event) {
         console.log("message recieved")
         let data = JSON.parse(event.data);
@@ -21,6 +20,7 @@ function matchTournament(type) {
         if (data.status == "userFound")
             console.log("user allready exist")
         if (data.status == 'start_tournament') {
+            update(tounamentSockcet)
             console.log("game start_tournament")
             tounamentSockcet.send(JSON.stringify({
                 'action' : 'start_tournament'
@@ -63,10 +63,14 @@ function matchTournament(type) {
             })) 
 
         }
-        if (data.status == 'tournament_finiched'){
+        if (data.status == 'fin_tournament'){
             console.log("tournament_finiched")
+            let tours = data.tournament
+            let winner = data.winner
+            console.log(tours)
+            utils.changeContent(page.Congratulations(winner))
             tounamentSockcet.send(JSON.stringify({
-                'action' : 'tournament_finiched',
+                'action' : 'fin_tournament',
             })) 
 
         }

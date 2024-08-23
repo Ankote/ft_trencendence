@@ -101,3 +101,13 @@ export function watingPlayersPage() {
 		</div>
 	`
 }
+
+export function Congratulations(winner) {
+
+    return `
+		<div class="waiting-container">
+			<div> Congratulation ${winner}</div>
+		</div>
+	`
+}
+

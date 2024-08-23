@@ -26,14 +26,13 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
                 await self.send(text_data=json.dumps({
                         'status': 'userFound'
                     }))
+                
         if action == "start_tournament":
             self.create_matchs()
         if action == "start_match":
-            
             self.start_match()
         
         if action == "move_player":
-
             key = text_data_json.get('key')
             if key == "ArrowUp" or key == "ArrowDown" or key == "w" or key == "s":
                 movePlayer(key, self.game_state['lplayer'], self.game_state['rplayer'], self.game_state['table']) 
@@ -46,23 +45,29 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
             if self.match_nbr == len (self.tours[self.tour]) :
                 self.tour += 1
                 self.create_matchs()
-
+                print(f"nbr : self.match_nbr")
                 await self.send(text_data=json.dumps({
                         'status': 'next_tour',
                     }))
-                # print(self.players)
             else:
                 self.start_match()
-            pass    
+
         if (action == "next_tour"):
-            print(f"Tour number : {self.tour + 1}")
-            self.start_match()
-        if (action == "tournament_finiched"):
+            self.match_nbr = 0
+            if len (self.tours[self.tour]) == 1 and len (self.tours[self.tour][self.match_nbr]) == 1:
+                await self.send(text_data=json.dumps({
+                        'status': 'fin_tournament',
+                        'tournament' : self.tours,
+                        'winner' : self.players[0]
+                    }))
+            else:
+                self.start_match()
+        if (action == "fin_tournament"):
+            print(f"winner is : {self.players[0]}")
             print("tournament finiched")
-        pass
+           
 
     async def start_tournament(self):
-        # print( (self.players))
         if len (self.players) == self.getMaxPlayers():
             print("tournament starts")
             await self.send(text_data=json.dumps({
@@ -84,8 +89,7 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
         for i in range(0, len(self.players), 2):
             match = self.players[i:i + 2]
             self.matches.append(match)
-        print(self.tour)
-        self.tours[self.tour] = self.tours[self.tour] = copy.deepcopy(self.matches)
+        self.tours[self.tour] = copy.deepcopy(self.matches)
         self.matches.clear()
         print(self.tours)
 
@@ -116,16 +120,13 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
 
 
     async def endGame(self):
-        # print(self.tour)
-        # print(self.tours)
         winner = gameOver(self.game_state['lplayer'] ,self.game_state['rplayer'] )
         if winner == self.game_state['lplayer']:
-            self.players.remove(self.tours[self.tour][self.match_nbr][0])
-        else:
             self.players.remove(self.tours[self.tour][self.match_nbr][1])
+        else:
+            self.players.remove(self.tours[self.tour][self.match_nbr][0])
         
         self.match_nbr += 1
-        # print(self.players)
         self.task.cancel()  
 
         await self.send(text_data=json.dumps({
@@ -138,6 +139,8 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
                     }))
 
     def start_match(self):
+        print(self.tour)
+        print(f"match {self.tours[self.tour][self.match_nbr]}")
         self.game_state = {
                     'ball': Ball(),
                     'net': Net(),
