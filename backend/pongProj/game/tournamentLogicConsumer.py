@@ -4,11 +4,15 @@ import json, asyncio, copy
 
 class TournamentLogicConsumer(AsyncWebsocketConsumer):
     async def connect(self):
+        # print(self.create_tournament_dict(16))
         self.players = []
         self.matches = []
         self.tours = {}
         self.match_nbr = 0
         self.tour = 0
+        self.next_match = 0
+        self.next_player = 0
+        self.next_tour = 0
 
         await self.accept()
         self.tourType = self.scope['url_route']['kwargs']['type']
@@ -28,7 +32,9 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
                     }))
                 
         if action == "start_tournament":
+            self.create_tournament_dict()
             self.create_matchs()
+
         if action == "start_match":
             self.start_match()
         
@@ -44,10 +50,12 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
         if (action == "next_match"):
             if self.match_nbr == len (self.tours[self.tour]) :
                 self.tour += 1
-                self.create_matchs()
-                print(f"nbr : self.match_nbr")
+                self.next_match = 0
+                self.next_tour += 1
+
                 await self.send(text_data=json.dumps({
                         'status': 'next_tour',
+                        'tournament_stats' : self.tours
                     }))
             else:
                 self.start_match()
@@ -63,7 +71,6 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
             else:
                 self.start_match()
         if (action == "fin_tournament"):
-            print(f"winner is : {self.players[0]}")
             print("tournament finiched")
            
 
@@ -91,8 +98,6 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
             self.matches.append(match)
         self.tours[self.tour] = copy.deepcopy(self.matches)
         self.matches.clear()
-        print(self.tours)
-
 
     async def send_data_periodically(self):
 
@@ -120,12 +125,19 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
 
 
     async def endGame(self):
+        print()
         winner = gameOver(self.game_state['lplayer'] ,self.game_state['rplayer'] )
         if winner == self.game_state['lplayer']:
             self.players.remove(self.tours[self.tour][self.match_nbr][1])
+            winner_name = self.tours[self.tour][self.match_nbr][0]
         else:
             self.players.remove(self.tours[self.tour][self.match_nbr][0])
-        
+            
+            winner_name = self.tours[self.tour][self.match_nbr][1]
+        self.tours[self.next_tour][self.next_match][self.next_player] = winner_name
+        self.next_player += 1
+        if(self.next_player == 2):
+            self.next_player = 0
         self.match_nbr += 1
         self.task.cancel()  
 
@@ -139,8 +151,7 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
                     }))
 
     def start_match(self):
-        print(self.tour)
-        print(f"match {self.tours[self.tour][self.match_nbr]}")
+        self.next_tour = self.tour + 1
         self.game_state = {
                     'ball': Ball(),
                     'net': Net(),
@@ -149,3 +160,37 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
                     'table': Table(),
                 }
         self.task =  asyncio.create_task(self.send_data_periodically())
+
+    def create_tournament_dict(self):
+        num_players = self.getMaxPlayers()
+        print(f"f :{num_players}")
+        
+        # Initialize the round number
+        round_number = 0
+
+        # While there are still players left to pair
+        while num_players > 1:
+            matches = []
+
+            # Create pairs of players
+            for _ in range(num_players // 2):
+                matches.append(['', ''])  # Empty strings represent unfilled player slots
+
+            # If there's an odd number of players, one player advances automatically
+            if num_players % 2 == 1:
+                matches.append([''])  # One player without a match
+
+            # Add the round to the tournament dictionary
+            self.tours[round_number] = matches
+
+            # Update the number of players for the next round
+            num_players = len(matches)
+            
+            # Move to the next round
+            round_number += 1
+
+        # Handle the final match
+        if num_players == 1:
+            self.tours[round_number] = [['']]  # Only one player left
+
+

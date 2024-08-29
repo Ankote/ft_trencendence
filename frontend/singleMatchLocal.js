@@ -5,6 +5,7 @@ let rplayer = {}
 let net = {}
 let ball = {}
 let table = {}
+// let pname
 
 function update(Sockcet)
 {  
@@ -36,6 +37,9 @@ export function singleMatchHandle()
             net = game_state.net;;
             ball = game_state.ball;
             table = game_state.table;
+            const pname = game_state.name;
+            document.getElementById("rplayer_name").textContent = pname
+            console.log(pname)
             utils.render(lplayer, rplayer,ball, table, net)
         }
         if (data.action == 'game_over') {

@@ -1,16 +1,15 @@
-PLAYER_HEIGHT 		= 100
-PLAYER_WIDTH 		=	8
-BALL_START_SPEED  	= .5
+PLAYER_HEIGHT 		= 128
+PLAYER_WIDTH 		=	16
+BALL_START_SPEED  	= 0
 PLAYER_SPEED  	= 15
-COMPONRNT_LEV 		= .3
 BALL_DELTA_SPEED  	= .01
 
 class   Table:
-        width = 600
-        height = 400
+        width = 1086
+        height = 624
         def __init__(self):
-            self.width   = 600
-            self.height  = 400
+            self.width   = 1086
+            self.height  = 624
             pass
         
         def to_dict(self):
@@ -26,9 +25,8 @@ class Player:
         self.y          = Table.height / 2 - PLAYER_HEIGHT / 2
         self.width      = PLAYER_WIDTH
         self.height     = PLAYER_HEIGHT
-        self.color      = "#00cc66"
+        self.color      = "#FF00FF"
         self.score      = 0
-    
 
 
     def to_dict(self):
@@ -47,7 +45,7 @@ class Opponent:
     y          = Table.height / 2 - PLAYER_HEIGHT / 2
     width      = PLAYER_WIDTH
     height     = PLAYER_HEIGHT
-    color      = "#cc8100"
+    color      = "#FF00FF"
     score      = 0
 
     def to_dict(self):
@@ -70,9 +68,9 @@ class Net:
     # def __init__(self):
     x      =   Table.width / 2 - 1
     y      =   0
-    width  =   2
-    height =   10
-    color  =   'green'
+    width  =   1
+    height =   20
+    color  =   '#857EBB'
     
     def to_dict(self):
         return{
@@ -89,9 +87,9 @@ class Ball:
     def __init__(self) :
         self.x			=	Table.width / 2
         self.y 			=	Table.height / 2
-        self.radius		=	8
+        self.radius		=	8.5
         self.speed 		=	BALL_START_SPEED
-        self.color		=	"#ff4d4d"
+        self.color		=	"#D9D9D9"
         self.velocityX 	=	-5
         self.velocityY	=	5
 
@@ -102,6 +100,9 @@ class Ball:
         if collision(self, selectPlayer):
             self.velocityX  =   -   self.velocityX
             self.speed      +=      BALL_DELTA_SPEED
+            selectPlayer.color = "#FFBB00"
+        else:
+            selectPlayer.color = "#FF00FF"
         if self.x - self.radius < 0:
             opponentP.score += 1
             resetBall(self)
@@ -158,7 +159,6 @@ def resetBall(ball):
     ball.y 			=	Table.height / 2
     ball.radius		=	8
     ball.speed 		=	BALL_START_SPEED
-    ball.color		=	"#ff4d4d"
     ball.velocityX 	=	- ball.velocityX
     ball.velocityY	=	- ball.velocityY
 	
@@ -181,9 +181,9 @@ def resetPlayers(lplayer, rplayer):
      rplayer.score = 0
 
 def gameOver(lplayer, rplayer):
-    if lplayer.score >= 1: # and lplayer.score - rplayer.score >= 2:
+    if lplayer.score >= 10 and lplayer.score - rplayer.score >= 10:
         return lplayer
-    elif rplayer.score >= 1: #and rplayer.score - lplayer.score >= 2:
+    elif rplayer.score >= 10 and rplayer.score - lplayer.score >= 10:
         return rplayer
     return None
 

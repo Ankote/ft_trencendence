@@ -34,9 +34,8 @@ function matchTournament(type) {
             if (nextBtn)
             { 
                 nextBtn.onclick = function next(){
-                    console.log("frew krew")
                 tounamentSockcet.send(JSON.stringify({
-                    'action' : 'next_match',
+                    'action' : 'next_match',  
                 }))
 
             }}   
@@ -86,7 +85,7 @@ function userJoin(socket){
             console.log("yew")
             let nicknameField = document.getElementById('nickname')
             socket.send(JSON.stringify({
-                'action' : 'player_joined',
+                'action' : 'player_joined', 
                 'user' : nicknameField.value
             }))
             if (nicknameField)

@@ -10,8 +10,8 @@ class SingleMatchLocalConsumer(AsyncWebsocketConsumer):
         self.game_state = {
             'ball': Ball(),
             'net': Net(),
-            'lplayer': Player(1),
-            'rplayer': Player(Table.width - PLAYER_WIDTH - 1),
+            'lplayer': Player(20),
+            'rplayer': Player(Table.width - PLAYER_WIDTH - 20),
             'table': Table(),
         }
         asyncio.create_task(self.send_data_periodically())
@@ -43,6 +43,8 @@ class SingleMatchLocalConsumer(AsyncWebsocketConsumer):
                 'net': self.game_state['net'].to_dict(),
                 'ball': self.game_state['ball'].to_dict(),
                 'table': self.game_state['table'].to_dict(),
+                'name' : 'alaoui ali'
+
             }
             await self.send(text_data=json.dumps({
                     'action': 'changes',
