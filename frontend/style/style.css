@@ -1,3 +1,18 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%; /* Ensure the body takes up the full height */
+    width: 100%;
+}
+
+.game_body {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #1D2046; 
+}
 
 .button-container {
     text-align: center;
@@ -16,19 +31,6 @@
     border-radius: 10px;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.3s;
-}
-
-.game-button:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
-}
-
-.play-bot-button {
-    background-color: #28a745;
-}
-
-.play-bot-button:hover {
-    background-color: #218838;
 }
 
 .waiting-container {
@@ -59,7 +61,7 @@
     display: block;
     width: 100%;
     padding: 10px;
-    margin: 10px 0;
+    margin: 10px 0px;
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 5px;

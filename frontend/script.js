@@ -6,7 +6,7 @@ import * as utils from './utils.js';
 import * as sigleLocal from './singleMatchLocal.js'
 // Select table
 
-utils.changeContent(page.loginPage());
+utils.changeContent(page.game_dashboard());
 
 let ID = ""
 let username = ""
@@ -14,41 +14,30 @@ let data = {}
 let players = {}
 let type = ""
 
-document.addEventListener("click", event => {
-    let oneVSoneBtn = document.getElementById('oneVSone')
-    let singleBtn = document.getElementById('singleLocal')
+document.addEventListener("DOMContentLoaded", event => {
+    let oneVSoneBtn = document.getElementById('local_button')
+    let singleBtn = document.getElementById('online_button')
     let loginBtn = document.getElementById('login')
-    let tourBtn = document.getElementById('tournament')
-    let  type 
+    let tourBtn = document.getElementById('tour_button')
 
-    if (loginBtn) {
-        loginBtn.onclick = function display() {
-            ID = document.getElementById('ID').value;
-            username = document.getElementById('username').value;
-            utils.changeContent(page.matchMakingPage())
-
-        };
-    }
-    if (oneVSoneBtn) {
-        oneVSoneBtn.onclick = function display() {
-            if (ID != "") {
+    if (singleBtn) {
+        //console.log("found")
+        singleBtn.onclick = function display() {
                 utils.changeContent(page.watingPlayersPage());
                 matchMakingHandling();
-            }
         };
     }
     if (tourBtn) {
         tourBtn.onclick = function display() {
-            if (ID != "") {
-                utils.changeContent(page.choiseTournamentPage());
-            }
+            utils.changeContent(page.choiseTournamentPage());
+            
             localT.handelTournament()
         };
     }
-    if (singleBtn)
+    if (oneVSoneBtn)
     { 
-        console.log("single")
-        singleBtn.onclick = function display() {
+        //console.log("single")
+        oneVSoneBtn.onclick = function display() {
             sigleLocal.singleMatchHandle();
         // localT.handelTournament()
     };
@@ -57,9 +46,9 @@ document.addEventListener("click", event => {
     // if (joinBtn) {
     //     joinBtn.onclick = function display() {
     //         if (ID != "") {
-    //             console.log("ayooow")
+    //             //console.log("ayooow")
     //             nickname = document.getElementById('nickname').value;
-    //             console.log("hi : " + document.getElementById('nickname').value)
+    //             //console.log("hi : " + document.getElementById('nickname').value)
     //             utils.changeContent(page.watingPlayersPage());
     //             matchTournament(nickname);
 

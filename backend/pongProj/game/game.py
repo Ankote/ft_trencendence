@@ -1,6 +1,6 @@
 PLAYER_HEIGHT 		= 128
 PLAYER_WIDTH 		=	16
-BALL_START_SPEED  	= 0
+BALL_START_SPEED  	= 1.1
 PLAYER_SPEED  	= 15
 BALL_DELTA_SPEED  	= .01
 
@@ -181,9 +181,9 @@ def resetPlayers(lplayer, rplayer):
      rplayer.score = 0
 
 def gameOver(lplayer, rplayer):
-    if lplayer.score >= 10 and lplayer.score - rplayer.score >= 10:
+    if lplayer.score >= 10 and lplayer.score - rplayer.score >= 2:
         return lplayer
-    elif rplayer.score >= 10 and rplayer.score - lplayer.score >= 10:
+    elif rplayer.score >= 10 and rplayer.score - lplayer.score >= 2:
         return rplayer
     return None
 

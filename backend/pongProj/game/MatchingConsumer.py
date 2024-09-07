@@ -13,24 +13,19 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
         self.user = self.scope["user"]
+        print(self.user)
         if self.user.is_authenticated:
             if await self.is_player_in_active_game(self.user.username):
-                print("player already in game! ")
-            #     await self.accept()
-            #     room_name = await self.get_player_room()
-            #     await self.channel_layer.group_add(room_name, self.channel_name)
-            #     await self.channel_layer.group_send(
-            #         room_name,
-            #         {
-            #             'type': 'start_game',
-            #             'room_name': room_name
-            #         }
-            # )
-
+                print("player already in game!")
             else:
                 self.add_to_waiting_list()
                 await self.match_players()
                 await self.accept()
+
+                await self.send(text_data=json.dumps({
+                        'status': 'player_joined',
+                        'username': self.user.username,
+                        }))
             
         else:
             print("Unauthenticated user.")

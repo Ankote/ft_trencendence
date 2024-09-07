@@ -10,7 +10,7 @@ let table = {}
 function update(Sockcet)
 {  
     document.addEventListener("keydown", (event) => {  
-        console.log("key  : " + event.key)      
+        //console.log("key  : " + event.key)      
         Sockcet.send(JSON.stringify({
             'key': event.key
         }))
@@ -24,7 +24,6 @@ export function singleMatchHandle()
 
     matchtSockcet.onopen = function(event)
     {
-        console.log("connecting")
         utils.changeContent(page.gamePage())
     }
     update(matchtSockcet)
@@ -39,11 +38,13 @@ export function singleMatchHandle()
             table = game_state.table;
             const pname = game_state.name;
             document.getElementById("rplayer_name").textContent = pname
-            console.log(pname)
+            document.getElementById("rplayer_score").textContent = game_state.rplayer.score;
+            document.getElementById("lplayer_score").textContent = game_state.lplayer.score;
+            //console.log(pname)
             utils.render(lplayer, rplayer,ball, table, net)
         }
         if (data.action == 'game_over') {
-            console.log("Game over")
+            //console.log("Game over")
         }
     }
 }

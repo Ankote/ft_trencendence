@@ -13,8 +13,9 @@ class GameLogicConsumer(AsyncWebsocketConsumer):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.username = self.scope['url_route']['kwargs']['username']
         self.room_group_name = f'game_{self.room_name}'
-        
         self.room = await self.get_room(self.room_name)
+        self.player1 = await self.get_player1(self.room_name)
+        self.player2 = await self.get_player2(self.room_name)
         
         # if self.room:
         #     print(f"Player 1: {self.room.player1.username}, Player 2: {self.room.player2.username}")
@@ -42,22 +43,23 @@ class GameLogicConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
-        action = text_data_json.get('action')
-        rect = text_data_json.get('rect')
-        clientY = text_data_json.get('clientY')
+        key = text_data_json.get('key')
 
         room = await self.get_room(self.room_name)
         player1 =await  self.get_player1(self.room_name)
         # print(player1)
         # print(self.username)
         game_state = self.__class__.playing_rooms[self.room_group_name]
-
-        if action == 'moved':
-            player_position = clientY - rect['top'] - PLAYER_HEIGHT / 2
-            if player1.username ==  self.username:
-                game_state['lplayer'].y = player_position
-            else:
-                game_state['rplayer'].y = player_position
+        if player1.username ==  self.username:
+            if key == "ArrowUp":
+                game_state['lplayer'].y -= 20
+            if key == "ArrowDown":
+                game_state['lplayer'].y += 20
+        else:
+            if key == "ArrowUp":
+                game_state['rplayer'].y -= 20
+            if key == "ArrowDown":
+                game_state['rplayer'].y += 20
 
     @sync_to_async
     def get_room(self, room_name):
@@ -72,6 +74,21 @@ class GameLogicConsumer(AsyncWebsocketConsumer):
             return singleMatch.objects.get(name=room_name).player1
         except singleMatch.DoesNotExist:
             return None
+        
+    async def player_dict(self, player):
+        game_state = self.__class__.playing_rooms[self.room_group_name]
+        if player == self.player1:  
+            score = game_state['lplayer'].score
+        else:
+            score = game_state['rplayer'].score
+        # print(score)?
+        return{
+            'first_name' : player.first_name,
+            'last_name' : player.last_name,
+            'username' : player.username,
+            'score': score
+        }
+    
 
     @sync_to_async
     def get_player2(self, room_name):
@@ -89,6 +106,8 @@ class GameLogicConsumer(AsyncWebsocketConsumer):
     async def send_data_periodically(self):
         game_state = self.__class__.playing_rooms[self.room_group_name]
         while True:
+            self.player1_info = await self.player_dict(self.player1)
+            self.player2_info = await self.player_dict(self.player2)
 
             if  gameOver(game_state['lplayer'] ,game_state['rplayer'] ) is  not None:
                 await self.endTheGame()
@@ -104,6 +123,9 @@ class GameLogicConsumer(AsyncWebsocketConsumer):
                 'net': game_state['net'].to_dict(),
                 'ball': game_state['ball'].to_dict(),
                 'table': game_state['table'].to_dict(),
+                'username':self.username,
+                'lplayer_obj':self.player1_info,
+                "rplayer_obj": self.player2_info
             }
 
             await self.channel_layer.group_send(

@@ -3,7 +3,7 @@ function logicTournament(room_name) {
     let url = `ws://127.0.0.1:8000/ws/tournamentLogic/` + room_name + '/'
     const tournamentLogicSocket = new WebSocket(url);
     tournamentLogicSocket.onopen = function(event) {
-        console.log("connection stablished logic")
+        //console.log("connection stablished logic")
     };
 
 }
@@ -13,7 +13,7 @@ export function matchTournament() {
     const tounamentSockcet = new WebSocket(url);
 
     tounamentSockcet.onopen = function(event) {
-        console.log("connection stablished")
+        //console.log("connection stablished")
         tounamentSockcet.send(JSON.stringify({
             'id': ID,
             'username': username
@@ -21,13 +21,13 @@ export function matchTournament() {
     };
 
     tounamentSockcet.onmessage = function(event) {
-        console.log("message recieved")
+        //console.log("message recieved")
 
         let data = JSON.parse(event.data);
-        console.log(data)
+        //console.log(data)
         if (data.status == 'waiting') {
 
-            console.log("waiting")
+            //console.log("waiting")
         }
     };
 };

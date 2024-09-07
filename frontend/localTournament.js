@@ -11,17 +11,14 @@ function matchTournament(type) {
     const tounamentSockcet = new WebSocket(url);
 
     tounamentSockcet.onopen = function(event) {
-        console.log("connection stablished")
+        //console.log("connection stablished")
     };
     tounamentSockcet.onmessage = function(event) {
-        console.log("message recieved")
         let data = JSON.parse(event.data);
-        console.log(data)
         if (data.status == "userFound")
             console.log("user allready exist")
         if (data.status == 'start_tournament') {
             update(tounamentSockcet)
-            console.log("game start_tournament")
             tounamentSockcet.send(JSON.stringify({
                 'action' : 'start_tournament'
             }))
@@ -48,13 +45,13 @@ function matchTournament(type) {
             ball = game_state.ball;
             table = game_state.table;
             utils.render(lplayer, rplayer,ball, table, net)
-            console.log(game_state.lplayer_name +" " + game_state.rplayer_name)
+            //console.log(game_state.lplayer_name +" " + game_state.rplayer_name)
         }
         if (data.status == 'game_over') {
             tounamentSockcet.send(JSON.stringify({
                 'action' : 'next_match',
             })) 
-           console.log("nextMatch")
+           //console.log("nextMatch")
         }
         if (data.status == 'next_tour'){
             tounamentSockcet.send(JSON.stringify({
@@ -63,10 +60,10 @@ function matchTournament(type) {
 
         }
         if (data.status == 'fin_tournament'){
-            console.log("tournament_finiched")
+            //console.log("tournament_finiched")
             let tours = data.tournament
             let winner = data.winner
-            console.log(tours)
+            //console.log(tours)
             utils.changeContent(page.Congratulations(winner))
             tounamentSockcet.send(JSON.stringify({
                 'action' : 'fin_tournament',
@@ -82,7 +79,7 @@ function userJoin(socket){
     if (joinBtn)
     {
         joinBtn.onclick = function join(){
-            console.log("yew")
+            //console.log("yew")
             let nicknameField = document.getElementById('nickname')
             socket.send(JSON.stringify({
                 'action' : 'player_joined', 
@@ -97,7 +94,7 @@ function userJoin(socket){
 function update(Sockcet)
 {  
     document.addEventListener("keydown", (event) => {  
-        console.log("key  : " + event.key)      
+        //console.log("key  : " + event.key)      
         Sockcet.send(JSON.stringify({
             'action'  : "move_player",
             'key': event.key
@@ -135,10 +132,10 @@ export function handelTournament(){
         }
     }
     // let nextBtn = document.getElementById('next')
-    // console.log(nextBtn)
+    // //console.log(nextBtn)
     // if (nextBtn)
     // { 
-    //     console.log("hehe")
+    //     //console.log("hehe")
     //     nextBtn.onclick = function join(){
     //     socket.send(JSON.stringify({
     //         'action' : 'next_match',
