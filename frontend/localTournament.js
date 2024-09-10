@@ -5,27 +5,59 @@ let rplayer = {}
 let net = {}
 let ball = {}
 let table = {}
+let countPlayers = 0;
+/* tours : {0: [['1', '2'], ['3', '4']], 1: [['', '']], 2: [['']]} */
+function tournament_board(type, tours)
+{
+    let bnrPlayers = getPlayersNumber(type);
+    console.log(bnrPlayers)
+    console.log(typeof(tours))
+}
 
-function matchTournament(type) {
+function getPlayersNumber(type)
+{
+    const types= {'tour4': 4, 'tour8': 8, 'tour16': 16}
+    return types[type]
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function matchTournament(type) {
     let url = `ws://127.0.0.1:8000/ws/localTournament/` + type + '/'
     const tounamentSockcet = new WebSocket(url);
 
     tounamentSockcet.onopen = function(event) {
-        //console.log("connection stablished")
+        document.getElementById('countPlayers').textContent = countPlayers;
+        document.getElementById('tourType').textContent = getPlayersNumber(type);
     };
-    tounamentSockcet.onmessage = function(event) {
+
+    tounamentSockcet.onmessage = async function(event) {
         let data = JSON.parse(event.data);
-        if (data.status == "userFound")
+
+        if (data.status == "userFound"){
+            
+            let nicknameField = document.getElementById('nickname')
+            const inputSection = document.querySelector('.input-section');
+            inputSection.classList.add('found');
+            countPlayers -= 1;
+            document.getElementById('countPlayers').textContent = countPlayers;
+            nicknameField.style.border= '2px solid red';
             console.log("user allready exist")
-        if (data.status == 'start_tournament') {
-            update(tounamentSockcet)
+        }
+        if (data.status == 'players_ready') {
+            utils.changeContent(page.TournamentBoardPage())
+            tournament_board(type, data.tournament_stats)   
+            // await sleep(5000);
+            // update(tounamentSockcet)
             tounamentSockcet.send(JSON.stringify({
                 'action' : 'start_tournament'
             }))
-            utils.changeContent(page.gamePage())   
-            tounamentSockcet.send(JSON.stringify({
-                'action' : 'start_match',
-            }))
+            // utils.changeContent(page.gamePage())   
+            // tounamentSockcet.send(JSON.stringify({
+            //     'action' : 'start_match',
+            // }))
 
             let nextBtn = document.getElementById('next')
             if (nextBtn)
@@ -45,8 +77,7 @@ function matchTournament(type) {
             ball = game_state.ball;
             table = game_state.table;
             utils.render(lplayer, rplayer,ball, table, net)
-            //console.log(game_state.lplayer_name +" " + game_state.rplayer_name)
-        }
+    }
         if (data.status == 'game_over') {
             tounamentSockcet.send(JSON.stringify({
                 'action' : 'next_match',
@@ -75,18 +106,36 @@ function matchTournament(type) {
 };
 
 function userJoin(socket){
+
     let joinBtn = document.getElementById('join')
+    let nicknameField = document.getElementById('nickname')
+    const inputSection = document.querySelector('.input-section');
+    nicknameField.addEventListener('input', function() {
+        if (nicknameField.value.trim() !== "") {
+            nicknameField.style.border= "none";
+            inputSection.classList.remove('empty');
+            inputSection.classList.remove('found');
+        }
+    });
     if (joinBtn)
     {
         joinBtn.onclick = function join(){
-            //console.log("yew")
-            let nicknameField = document.getElementById('nickname')
-            socket.send(JSON.stringify({
-                'action' : 'player_joined', 
-                'user' : nicknameField.value
-            }))
-            if (nicknameField)
-                nicknameField.value = ''
+            if (nicknameField.value == '')
+            {
+                console.log("empty")
+                inputSection.classList.add('empty');
+                nicknameField.style.border= '2px solid red';
+            }
+            else{
+                countPlayers += 1;
+                document.getElementById('countPlayers').textContent = countPlayers;
+                socket.send(JSON.stringify({
+                    'action' : 'player_joined', 
+                    'user' : nicknameField.value
+                }))
+                if (nicknameField)
+                    nicknameField.value = '' 
+            }
         }    
     }
 }
@@ -112,7 +161,7 @@ export function handelTournament(){
     if (tour4) {
         tour4.onclick = function setType() {
             type = "tour4"
-            utils.changeContent(page.JoinTournamentPage());
+            utils.changeContent(page.tournamentPlayersJoinPage());
             matchTournament(type);
         }
     }
@@ -120,26 +169,15 @@ export function handelTournament(){
     if (tour8) {
         tour8.onclick = function setType() {
             type = "tour8"
-            utils.changeContent(page.JoinTournamentPage());
+            utils.changeContent(page.tournamentPlayersJoinPage());
             matchTournament(type);
         }
     }
     if (tour16) {
         tour16.onclick = function setType() {
             type = "tour16"
-            utils.changeContent(page.JoinTournamentPage());
+            utils.changeContent(page.tournamentPlayersJoinPage());
             matchTournament(type);
         }
     }
-    // let nextBtn = document.getElementById('next')
-    // //console.log(nextBtn)
-    // if (nextBtn)
-    // { 
-    //     //console.log("hehe")
-    //     nextBtn.onclick = function join(){
-    //     socket.send(JSON.stringify({
-    //         'action' : 'next_match',
-    //     }))
-
-    // }}
 }

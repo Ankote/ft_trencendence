@@ -1,0 +1,82 @@
+
+.tournament-title {
+    margin-bottom: 20px;
+    color: #fff;
+    font-family: 'Montserrat', sans-serif; 
+}
+
+
+.tournament-container {
+    text-align: center;
+    background-color: #0B0D22; /* Darker background for the container */
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.3);
+    width: 400px;
+}
+
+.input-section {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    position: relative; 
+}
+
+.input-section.empty::after {
+    content: "Name field cannot be empty*";
+    color: red;
+    position: absolute;
+    left: 74px;
+    font-size: 12px;
+    top: 40px;
+}
+
+.input-section.found::after {
+    content: "this nickname already found";
+    color: red;
+    position: absolute;
+    left: 74px;
+    font-size: 12px;
+    top: 40px;
+}
+
+.player-input {
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    margin-right: 10px;
+    width: 200px;
+}
+
+.join-btn {
+    padding: 10px 20px;
+    background-color: #4CAF50; /* Green for join button */
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.join-btn:disabled {
+    background-color: #888888; /* Disabled button color */
+    cursor: not-allowed;
+}
+
+.player-count {
+    margin-bottom: 10px;
+    color: #fff;
+    font-family: 'Montserrat', sans-serif; 
+}
+
+.player-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.player-list-item {
+    background-color: #4CAF50;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 8px;
+}

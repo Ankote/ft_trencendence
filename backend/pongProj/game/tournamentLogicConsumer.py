@@ -4,7 +4,6 @@ import json, asyncio, copy
 
 class TournamentLogicConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        # print(self.create_tournament_dict(16))
         self.players = []
         self.matches = []
         self.tours = {}
@@ -31,16 +30,16 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
                         'status': 'userFound'
                     }))
                 
-        if action == "start_tournament":
-            self.create_tournament_dict()
-            self.create_matchs()
+        # if action == "start_tournament":
+        #     self.create_tournament_dict()
+        #       
 
         if action == "start_match":
             self.start_match()
         
         if action == "move_player":
             key = text_data_json.get('key')
-            if key == "ArrowUp" or key == "ArrowDown" or key == "w" or key == "s":
+            if key == "ArrowUp" or key == "ArrowDown" or key.lower() == "w" or key.lower() == "s":
                 movePlayer(key, self.game_state['lplayer'], self.game_state['rplayer'], self.game_state['table']) 
          
         
@@ -76,9 +75,12 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
 
     async def start_tournament(self):
         if len (self.players) == self.getMaxPlayers():
-            print("tournament starts")
+            self.create_tournament_dict()
+            self.create_matchs()
+            print(f"tours : {self.tours}")
             await self.send(text_data=json.dumps({
-                    'status': 'start_tournament',
+                    'status': 'players_ready',
+                    'tournament_stats' : self.tours
                 }))
     
     def getMaxPlayers(self):
@@ -125,7 +127,6 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
 
 
     async def endGame(self):
-        print()
         winner = gameOver(self.game_state['lplayer'] ,self.game_state['rplayer'] )
         if winner == self.game_state['lplayer']:
             self.players.remove(self.tours[self.tour][self.match_nbr][1])

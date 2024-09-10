@@ -14,6 +14,11 @@ let data = {}
 let players = {}
 let type = ""
 
+// console.log(document.baseURI)
+// console.log(document.URL)
+// console.log(document.cookie)
+// console.log(document.documentElement)
+// document.body.style.backgroundColor = 'red'
 document.addEventListener("DOMContentLoaded", event => {
     let oneVSoneBtn = document.getElementById('local_button')
     let singleBtn = document.getElementById('online_button')
@@ -30,7 +35,6 @@ document.addEventListener("DOMContentLoaded", event => {
     if (tourBtn) {
         tourBtn.onclick = function display() {
             utils.changeContent(page.choiseTournamentPage());
-            
             localT.handelTournament()
         };
     }
