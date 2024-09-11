@@ -147,13 +147,13 @@ export function TournamentBoardPage() {
                 <div class="div div1">
                     <div class="player_round1 player1 lplayer">
                         <div class="col1">
-                            <div class="username" id = "player1">player 1</div>
+                            <div class="username_round1 username" id = "player1">player 1</div>
                         </div>
                     </div>
 
                     <div class="player_round1 player2 lplayer">
                         <div class="col1">
-                            <div class="username" id = "player2">player 2</div>
+                            <div class="username_round1 username" id = "player2">player 2</div>
                         </div>
                     </div>
                 </div>
@@ -162,7 +162,7 @@ export function TournamentBoardPage() {
 
                     <div class="player_round2 player1">
                         <div class="col1">
-                            <div class="username" id = "player11">player 1</div>
+                            <div class="username_round2 username" id = "player11">player 1</div>
                         </div>
                     </div>
                 </div>
@@ -170,17 +170,17 @@ export function TournamentBoardPage() {
                 <div class="div div3">
                     <div class="tournament_title">pong game tournament</div>
                     <div class="trophy"></div>
-                    <!-- <div class="winner">Player 1</div>
-                    <div class="champion_str">champion</div> -->
-                   <!-- <input class="users_field" type="text" placeholder="username/nickname" id="nickname">
-                    <button id="join">join</button>-->
+                    <div class="username_round3 winner">Player 1</div>
+                    <!-- <div class="champion_str">champion</div> -->
+                   <!-- <input class="users_field" type="text" placeholder="username/nickname" id="nickname">-->
+                    <button id="start">Start</button>
                 </div>
 
                 <div class="div div4">
 
                     <div class="player_round2 player1">
                         <div class="col1">
-                            <div class="username" id = "player1">player 3</div>
+                            <div class="username_round2 username" id = "player1">player 3</div>
                         </div>
                     </div>
                 </div>
@@ -188,13 +188,13 @@ export function TournamentBoardPage() {
                 <div class="div div5">
                     <div class="player_round1 player1 rplayer">
                         <div class="col1">
-                            <div class="username" id = "player3">player 3</div>
+                            <div class="username_round1 username" id = "player3">player 3</div>
                         </div>
                     </div>
 
                     <div class="player_round1 player2 rplayer">
                         <div class="col1">
-                            <div class="username" id = "player4">player 4</div>
+                            <div class="username_round1 username" id = "player4">player 4</div>
                         </div>
                     </div>
 

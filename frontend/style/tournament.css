@@ -226,18 +226,18 @@
     font-family:'Notable';
 }
 
-.div3>#join{
+.div3>#start{
     width: 80%;
-    height: 5%;
-    background-color: #FFEB3B;
-    color: black;
-    border-radius: 20px;
+    height: 7%;
+    background-color: #88ADE7;
+    color: #fff;
+    border-radius: 10px;
     border: none;
-    font-size: 12px;
+    font-size: 20px;
     font-family:'Notable';
 }
 
-.div3>#join:hover{
+.div3>#start:hover{
     opacity: 75%;
     color: rgb(16, 62, 77);
 }

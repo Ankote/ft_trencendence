@@ -7,11 +7,30 @@ let ball = {}
 let table = {}
 let countPlayers = 0;
 /* tours : {0: [['1', '2'], ['3', '4']], 1: [['', '']], 2: [['']]} */
-function tournament_board(type, tours)
+function tournament_board(tours)
 {
-    let bnrPlayers = getPlayersNumber(type);
-    console.log(bnrPlayers)
-    console.log(typeof(tours))
+    console.log(tours)
+    let  cptTour = 1;
+    let toursObjs = {}
+    let objectsCpt = 0;
+
+
+    while (cptTour - 1 < Object.keys(tours).length)
+    {
+        let tourClassName = 'username_round' + cptTour;
+        toursObjs = document.getElementsByClassName(tourClassName)
+        if (toursObjs)
+        {
+            for (let i = 0; i < tours[cptTour - 1].length; i++)
+            {
+                toursObjs[objectsCpt++].textContent = tours[cptTour - 1][i][0];
+                if (tours[cptTour - 1][i].length == 2)
+                    toursObjs[objectsCpt++].textContent = tours[cptTour - 1][i][1];
+            }
+            cptTour++;
+            objectsCpt =  0;
+        }
+    }
 }
 
 function getPlayersNumber(type)
@@ -48,16 +67,20 @@ async function matchTournament(type) {
         }
         if (data.status == 'players_ready') {
             utils.changeContent(page.TournamentBoardPage())
-            tournament_board(type, data.tournament_stats)   
+            tournament_board(data.tournament_stats)   
             // await sleep(5000);
-            // update(tounamentSockcet)
+            update(tounamentSockcet)
             tounamentSockcet.send(JSON.stringify({
                 'action' : 'start_tournament'
             }))
-            // utils.changeContent(page.gamePage())   
-            // tounamentSockcet.send(JSON.stringify({
-            //     'action' : 'start_match',
-            // }))
+            let start = document.getElementById("start")
+            start.onclick = function start(){
+                utils.changeContent(page.gamePage())   
+                tounamentSockcet.send(JSON.stringify({
+                    'action' : 'start_match',
+                }))
+
+            }
 
             let nextBtn = document.getElementById('next')
             if (nextBtn)
@@ -82,7 +105,6 @@ async function matchTournament(type) {
             tounamentSockcet.send(JSON.stringify({
                 'action' : 'next_match',
             })) 
-           //console.log("nextMatch")
         }
         if (data.status == 'next_tour'){
             tounamentSockcet.send(JSON.stringify({
@@ -91,10 +113,8 @@ async function matchTournament(type) {
 
         }
         if (data.status == 'fin_tournament'){
-            //console.log("tournament_finiched")
             let tours = data.tournament
             let winner = data.winner
-            //console.log(tours)
             utils.changeContent(page.Congratulations(winner))
             tounamentSockcet.send(JSON.stringify({
                 'action' : 'fin_tournament',
