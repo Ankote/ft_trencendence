@@ -188,11 +188,21 @@ def gameOver(lplayer, rplayer):
     return None
 
 def movePlayer(key, lplayer, rplayer, table):
-    if key == 'ArrowUp' and rplayer.y + PLAYER_HEIGHT -  PLAYER_SPEED > 4:
+    key = key.lower()
+    if key == 'arrowup' and rplayer.y + PLAYER_HEIGHT -  PLAYER_SPEED > 4:
         rplayer.y -= PLAYER_SPEED
-    if key == 'ArrowDown' and rplayer.y + PLAYER_SPEED <  table.height -  4:
+    if key == 'arrowdown' and rplayer.y + PLAYER_SPEED <  table.height -  4:
         rplayer.y += PLAYER_SPEED
     if key.lower() == 'w' and lplayer.y + PLAYER_HEIGHT -  PLAYER_SPEED > 4:
         lplayer.y -= PLAYER_SPEED
     if key.lower() == 's' and lplayer.y  + PLAYER_SPEED <  table.height -  4:
         lplayer.y+= PLAYER_SPEED
+
+    
+def getMaxPlayers(tourType):
+    numberPlayers = {
+        "tour4": 4,
+        "tour8": 8,
+        "tour16": 16
+    }
+    return numberPlayers.get(tourType)

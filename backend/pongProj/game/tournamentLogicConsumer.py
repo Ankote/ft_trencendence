@@ -1,6 +1,6 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
-from .game import Player, Ball, Net, Table, PLAYER_WIDTH, PLAYER_HEIGHT, gameOver, movePlayer
-import json, asyncio, copy
+from .game import Player, Ball, Net, Table, PLAYER_WIDTH, PLAYER_HEIGHT, gameOver, movePlayer, getMaxPlayers
+import json, asyncio, copy, random
 
 class TournamentLogicConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -12,10 +12,8 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
         self.next_match = 0
         self.next_player = 0
         self.next_tour = 0
-
         await self.accept()
         self.tourType = self.scope['url_route']['kwargs']['type']
-
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
@@ -29,20 +27,13 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
                 await self.send(text_data=json.dumps({
                         'status': 'userFound'
                     }))
-                
-        # if action == "start_tournament":
-        #     self.create_tournament_dict()
-        #       
 
         if action == "start_match":
             self.start_match()
         
         if action == "move_player":
-            key = text_data_json.get('key')
-            if key == "ArrowUp" or key == "ArrowDown" or key.lower() == "w" or key.lower() == "s":
-                movePlayer(key, self.game_state['lplayer'], self.game_state['rplayer'], self.game_state['table']) 
+            movePlayer(text_data_json.get('key'), self.game_state['lplayer'], self.game_state['rplayer'], self.game_state['table']) 
          
-        
         if action == "match_finished":
             pass
         
@@ -59,6 +50,7 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
             else:
                 self.start_match()
 
+        #tournament finished
         if (action == "next_tour"):
             self.match_nbr = 0
             if len (self.tours[self.tour]) == 1 and len (self.tours[self.tour][self.match_nbr]) == 1:
@@ -72,9 +64,9 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
         if (action == "fin_tournament"):
             print("tournament finiched")
            
-
     async def start_tournament(self):
-        if len (self.players) == self.getMaxPlayers():
+        if len (self.players) == getMaxPlayers(self.tourType):
+            random.shuffle(self.players)
             self.create_tournament_dict()
             self.create_matchs()
             print(f"tours : {self.tours}")
@@ -82,14 +74,6 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
                     'status': 'players_ready',
                     'tournament_stats' : self.tours
                 }))
-    
-    def getMaxPlayers(self):
-        numberPlayers = {
-            "tour4": 4,
-            "tour8": 8,
-            "tour16": 16
-        }
-        return numberPlayers.get(self.tourType)
 
     def userExists(self, user):
         return user in self.players
@@ -125,7 +109,6 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
                     }))
             await asyncio.sleep(0.009)
 
-
     async def endGame(self):
         winner = gameOver(self.game_state['lplayer'] ,self.game_state['rplayer'] )
         if winner == self.game_state['lplayer']:
@@ -133,7 +116,6 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
             winner_name = self.tours[self.tour][self.match_nbr][0]
         else:
             self.players.remove(self.tours[self.tour][self.match_nbr][0])
-            
             winner_name = self.tours[self.tour][self.match_nbr][1]
         self.tours[self.next_tour][self.next_match][self.next_player] = winner_name
         self.next_player += 1
@@ -145,7 +127,7 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
                 'status': 'game_over',
                 }))
-        pass
+    
         if len (self.players ) == 1:
             await self.send(text_data=json.dumps({
                     'status': 'tournament_finiched',
@@ -163,8 +145,7 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
         self.task =  asyncio.create_task(self.send_data_periodically())
 
     def create_tournament_dict(self):
-        num_players = self.getMaxPlayers()
-        print(f"f :{num_players}")
+        num_players = getMaxPlayers(self.tourType)
         
         # Initialize the round number
         round_number = 0
@@ -193,5 +174,4 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
         # Handle the final match
         if num_players == 1:
             self.tours[round_number] = [['']]  # Only one player left
-
 

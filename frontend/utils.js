@@ -45,9 +45,17 @@ function drawBall(x, y, r, color) {
     ctx.fill();
 }
 
-function drawText(text, x, y, color) {
+export function drawText(text, x, y, color) {
+    if (!ctx)
+    {
+        const canv = document.getElementById("table");
+        canv.width = table.width 
+        canv.height = table.height
+        if (canv)
+            ctx = canv.getContext("2d");
+    }
     ctx.fillStyle = color;
-    ctx.font = "45px fantasy";
+    ctx.font = "14px fantasy";
     ctx.fillText(text, x, y);
 }
 

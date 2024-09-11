@@ -7,6 +7,16 @@ let ball = {}
 let table = {}
 let countPlayers = 0;
 /* tours : {0: [['1', '2'], ['3', '4']], 1: [['', '']], 2: [['']]} */
+
+// async function startingMatch(){
+//     utils.drawText("Match will start at 3", 40, 50, "yellow")
+//     await sleep(1000)
+//     utils.drawText("Match will start at 2", 40, 50, "yellow")
+//     await sleep(1000)
+//     utils.drawText("Match will start at 1", 40, 50, "yellow")
+//     await sleep(1000)
+// }
+
 function tournament_board(tours)
 {
     console.log(tours)
@@ -74,23 +84,23 @@ async function matchTournament(type) {
                 'action' : 'start_tournament'
             }))
             let start = document.getElementById("start")
-            start.onclick = function start(){
-                utils.changeContent(page.gamePage())   
+            start.onclick = async function start(){
+                utils.changeContent(page.gamePage())
                 tounamentSockcet.send(JSON.stringify({
                     'action' : 'start_match',
                 }))
 
             }
 
-            let nextBtn = document.getElementById('next')
-            if (nextBtn)
-            { 
-                nextBtn.onclick = function next(){
-                tounamentSockcet.send(JSON.stringify({
-                    'action' : 'next_match',  
-                }))
+            // let nextBtn = document.getElementById('next')
+            // if (nextBtn)
+            // { 
+            //     nextBtn.onclick = function next(){
+            //     tounamentSockcet.send(JSON.stringify({
+            //         'action' : 'next_match',  
+            //     }))
 
-            }}   
+            // }}   
         }
         if (data.status == 'changes') {
             let game_state = data.game_state
