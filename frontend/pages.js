@@ -25,6 +25,30 @@ export function game_dashboard() {
     `;
 }
 
+export function beforStartMatch() {
+
+    return `
+		<div class="game_body">
+			<div class="content-container">
+			    <div class="left-player players-block">
+                    <div class="players-card" id="lplayer-div">Alami youssef</div>
+                    <button class="ready-button" id="left-button">Ready</button>
+                </div>
+                <div class="vs players-block">
+                    <div id="timer"></div>
+
+                </div>
+			    <div class="right-player players-block">
+                    <div  class="players-card"  id="rplayer-div">Alami youssef</div>
+                    <button class="ready-button" id="right-button">Ready</button>
+                </div>
+			</div>
+
+		</div>
+        
+    `;
+}
+
 export function JoinTournamentPage() {
     return `
         <input type="text" id = "nickname" class="form-input" placeholder="Enter nickname" required>

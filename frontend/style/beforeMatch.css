@@ -1,0 +1,58 @@
+
+
+.content-container {
+    width: 60%;
+    height: 66%;
+    background: #6C66A4;
+    display: flex;
+    align-items: center;
+}
+
+.players-block{
+    display: flex;
+    width: calc(100% / 3);
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.players-card{
+    width: 50%;
+    height: 25%;
+    border: solid 4px #1D495F;
+    border-top:  solid 30px #1D495F;
+    justify-content: end;
+    align-items: end;
+    
+}
+
+.content-container> div{
+    width: calc(100% / 3);
+    text-align: center;
+}
+
+/* #lplayer-name,#rplayer-name{
+    display: block;
+    width: 90%;
+    height: 90%;
+    border: solid 1px;
+    border-top:  solid 40px;
+} */
+
+.ready-button{
+    width: 50%;
+    height: 8%;
+    color: #FFFFFF;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#left-button{
+    background: #4896E2;
+}
+#right-button{
+    background: #F35969;
+    
+}

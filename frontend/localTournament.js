@@ -53,6 +53,94 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function handelErrorUserFound(){
+          
+    let nicknameField = document.getElementById('nickname')
+    const inputSection = document.querySelector('.input-section');
+    inputSection.classList.add('found');
+    countPlayers -= 1;
+    document.getElementById('countPlayers').textContent = countPlayers;
+    nicknameField.style.border= '2px solid red';
+}
+
+function handelTournamentStart(socket, tours){
+    utils.changeContent(page.TournamentBoardPage())
+    // console.log("current match : " + data.currentMatch);
+    // console.log("next match : " + data.next_match);
+    tournament_board(tours)   
+    // await sleep(5000);
+    socket.send(JSON.stringify({
+        'action' : 'start_tournament'
+    }))
+    let start = document.getElementById("start")
+    start.onclick = async function start(){
+        utils.changeContent(page.beforStartMatch());
+        let lPlayerReady = true
+        let RPlayerReady = true
+        let lPlayerReadyBtn = document.getElementById('left-button')
+        let RPlayerReadyBtn = document.getElementById('right-button')
+        let timer = document.getElementById('timer')
+        if (lPlayerReadyBtn) {
+            lPlayerReadyBtn.addEventListener('click', function ready() {
+                if (lPlayerReady) {
+                    lPlayerReadyBtn.textContent = 'Ready';
+                    lPlayerReadyBtn.style.background = '#4896E2';
+                } else {
+                    lPlayerReadyBtn.textContent = 'Cancel';
+                    lPlayerReadyBtn.style.background = 'red';
+                }
+                lPlayerReady = !lPlayerReady;
+            });
+        }
+        
+        if (RPlayerReadyBtn) 
+        {
+            RPlayerReadyBtn.addEventListener('click', function ready() 
+            {
+                if (RPlayerReady)
+                {
+                    RPlayerReadyBtn.textContent = 'Ready';
+                    RPlayerReadyBtn.style.background = '#F35969';
+                }
+                else
+                {
+                    RPlayerReadyBtn.textContent = 'Cancel';
+                    RPlayerReadyBtn.style.background = 'red';
+                }
+                RPlayerReady = !RPlayerReady;
+            });
+        }
+        if (!RPlayerReady && !lPlayerReady){
+            for (let i = 0 ; i < 5; i ++)
+            {
+                timer.textContent += '.'
+                await sleep(1000)
+            }
+            update(socket)
+            utils.changeContent(page.gamePage())
+            socket.send(JSON.stringify({
+                'action' : 'start_match',
+            }))
+        }
+            
+    }
+}
+
+function render(data){
+    let game_state = data.game_state
+    console.log("lplayer : " + data.lplayer_name)
+    document.getElementById('lplayer_name').textContent = game_state.lplayer_name
+    document.getElementById('rplayer_name').textContent =  game_state.rplayer_name
+    document.getElementById('lplayer_score').textContent =  game_state.lplayer_score
+    document.getElementById('rplayer_score').textContent =  game_state.rplayer_score
+    lplayer = game_state.lplayer;
+    rplayer = game_state.rplayer;
+    net = game_state.net;;
+    ball = game_state.ball;
+    table = game_state.table;
+    utils.render(lplayer, rplayer,ball, table, net)
+}
+
 async function matchTournament(type) {
     let url = `ws://127.0.0.1:8000/ws/localTournament/` + type + '/'
     const tounamentSockcet = new WebSocket(url);
@@ -65,52 +153,15 @@ async function matchTournament(type) {
     tounamentSockcet.onmessage = async function(event) {
         let data = JSON.parse(event.data);
 
-        if (data.status == "userFound"){
-            
-            let nicknameField = document.getElementById('nickname')
-            const inputSection = document.querySelector('.input-section');
-            inputSection.classList.add('found');
-            countPlayers -= 1;
-            document.getElementById('countPlayers').textContent = countPlayers;
-            nicknameField.style.border= '2px solid red';
-            console.log("user allready exist")
-        }
-        if (data.status == 'players_ready') {
-            utils.changeContent(page.TournamentBoardPage())
-            tournament_board(data.tournament_stats)   
-            // await sleep(5000);
-            update(tounamentSockcet)
-            tounamentSockcet.send(JSON.stringify({
-                'action' : 'start_tournament'
-            }))
-            let start = document.getElementById("start")
-            start.onclick = async function start(){
-                utils.changeContent(page.gamePage())
-                tounamentSockcet.send(JSON.stringify({
-                    'action' : 'start_match',
-                }))
+        if (data.status == "userFound")
+            handelErrorUserFound();
 
-            }
+        if (data.status == 'players_ready')
+            handelTournamentStart(tounamentSockcet, data.tournament_stats)
 
-            // let nextBtn = document.getElementById('next')
-            // if (nextBtn)
-            // { 
-            //     nextBtn.onclick = function next(){
-            //     tounamentSockcet.send(JSON.stringify({
-            //         'action' : 'next_match',  
-            //     }))
+        if (data.status == 'render') 
+            render(data);
 
-            // }}   
-        }
-        if (data.status == 'changes') {
-            let game_state = data.game_state
-            lplayer = game_state.lplayer;
-            rplayer = game_state.rplayer;
-            net = game_state.net;;
-            ball = game_state.ball;
-            table = game_state.table;
-            utils.render(lplayer, rplayer,ball, table, net)
-    }
         if (data.status == 'game_over') {
             tounamentSockcet.send(JSON.stringify({
                 'action' : 'next_match',

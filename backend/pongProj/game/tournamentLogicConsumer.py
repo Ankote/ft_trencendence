@@ -22,8 +22,8 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
             user = text_data_json.get('user')
             if not self.userExists(user):
                 self.players.append(user)
-                await self.start_tournament()
-            else:    
+                await self.start_tournament() #try to start tournament; tournament will start if all players joined
+            else:
                 await self.send(text_data=json.dumps({
                         'status': 'userFound'
                     }))
@@ -33,7 +33,7 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
         
         if action == "move_player":
             movePlayer(text_data_json.get('key'), self.game_state['lplayer'], self.game_state['rplayer'], self.game_state['table']) 
-         
+
         if action == "match_finished":
             pass
         
@@ -63,7 +63,8 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
                 self.start_match()
         if (action == "fin_tournament"):
             print("tournament finiched")
-           
+            
+    #If all players joined, the fronted will be informed
     async def start_tournament(self):
         if len (self.players) == getMaxPlayers(self.tourType):
             random.shuffle(self.players)
@@ -72,9 +73,11 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
             print(f"tours : {self.tours}")
             await self.send(text_data=json.dumps({
                     'status': 'players_ready',
-                    'tournament_stats' : self.tours
+                    'tournament_stats' : self.tours,
+                    # 'currentMatch': self.tours[self.tour][self.match_nbr],
+                    # 'next_match' : self.tours[self.tour][self.next_match],
                 }))
-
+            
     def userExists(self, user):
         return user in self.players
     
@@ -100,11 +103,13 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
                 'net': self.game_state['net'].to_dict(),
                 'ball': self.game_state['ball'].to_dict(),
                 'table': self.game_state['table'].to_dict(),
-                'lplayer_name' : self.tours[self.tour][0][0],
-                'rplayer_name' : self.tours[self.tour][0][1]
+                'lplayer_name' : self.tours[self.tour][self.match_nbr][0],
+                'rplayer_name' : self.tours[self.tour][self.match_nbr][1],
+                'lplayer_score': self.game_state['lplayer'].score,
+                'rplayer_score': self.game_state['rplayer'].score
             }
             await self.send(text_data=json.dumps({
-                    'status': 'changes',
+                    'status': 'render',
                     'game_state': data,
                     }))
             await asyncio.sleep(0.009)
