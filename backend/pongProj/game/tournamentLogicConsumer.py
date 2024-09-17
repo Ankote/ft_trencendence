@@ -17,6 +17,7 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
+
         action= text_data_json.get('action')
         if (action == "player_joined"):
             user = text_data_json.get('user')
@@ -70,12 +71,11 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
             random.shuffle(self.players)
             self.create_tournament_dict()
             self.create_matchs()
-            print(f"tours : {self.tours}")
             await self.send(text_data=json.dumps({
                     'status': 'players_ready',
                     'tournament_stats' : self.tours,
-                    # 'currentMatch': self.tours[self.tour][self.match_nbr],
-                    # 'next_match' : self.tours[self.tour][self.next_match],
+                    'currentMatch': self.tours[self.tour][self.match_nbr],
+                    'next_match' : self.tours[self.tour][self.next_match],
                 }))
             
     def userExists(self, user):
@@ -93,6 +93,7 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
         while True:
             if  gameOver(self.game_state['lplayer'] ,self.game_state['rplayer'] ) is  not None:
                 await self.endGame()
+                print(self.tours)
                 self.close
                 break
             self.game_state['ball'].update(self.game_state['lplayer'], self.game_state['rplayer'])
@@ -131,6 +132,9 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
 
         await self.send(text_data=json.dumps({
                 'status': 'game_over',
+                'tournament_stats' : self.tours,
+                # 'currentMatch': self.tours[self.tour][self.match_nbr],
+                # 'next_match' : self.tours[self.tour][self.next_match],
                 }))
     
         if len (self.players ) == 1:

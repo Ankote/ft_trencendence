@@ -80,7 +80,6 @@ export function render(lplayer, rplayer, ball, table, net) {
         if (canv)
             ctx = canv.getContext("2d");
     }
-    
     drawRect(0, 0, table.width, table.height, "#0B0D22");
     // Draw Net
     drawNet(table, net);
@@ -92,12 +91,3 @@ export function render(lplayer, rplayer, ball, table, net) {
         //display scors
 
 }
-
-// Check collision and AI movement can be added here
-
-// function game() {
-// 	render();
-// }
-
-// const FPS = 60; // frames per second
-// setInterval(game, 1000 / FPS);

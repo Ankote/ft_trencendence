@@ -31,15 +31,17 @@ export function beforStartMatch() {
 		<div class="game_body">
 			<div class="content-container">
 			    <div class="left-player players-block">
-                    <div class="players-card" id="lplayer-div">Alami youssef</div>
+                    <div class="players-card" id="lplayer-div"> <span id="lplayer_name">Alami youssef</span></div>
                     <button class="ready-button" id="left-button">Ready</button>
                 </div>
-                <div class="vs players-block">
+                <div class="players-block">
+                    <div class="vs" >
+                        <span>VS</span>
+                    </div>
                     <div id="timer"></div>
-
                 </div>
 			    <div class="right-player players-block">
-                    <div  class="players-card"  id="rplayer-div">Alami youssef</div>
+                    <div  class="players-card"  id="rplayer-div"><span id="rplayer_name">Alami youssef</span></div>
                     <button class="ready-button" id="right-button">Ready</button>
                 </div>
 			</div>
@@ -230,19 +232,6 @@ export function TournamentBoardPage() {
 	`
 };
 
-export function matchMakingPage() {
-
-
-    return `
-		 
-	<div class="button-container">
-		<button class="game-button" id="oneVSone">1 vs 1</button>
-		<button class="game-button" id="singleLocal">1 vs 1 local</button>
-		<button class="game-button play-bot-button">Play with Bot</button>
-		<button class="game-button play-bot-button" id="tournament">Play Tournament</button>
-	</div>'
-	`
-};
 
 export function watingPlayersPage() {
 

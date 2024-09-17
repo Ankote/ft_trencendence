@@ -6,25 +6,14 @@ let net = {}
 let ball = {}
 let table = {}
 let countPlayers = 0;
-/* tours : {0: [['1', '2'], ['3', '4']], 1: [['', '']], 2: [['']]} */
-
-// async function startingMatch(){
-//     utils.drawText("Match will start at 3", 40, 50, "yellow")
-//     await sleep(1000)
-//     utils.drawText("Match will start at 2", 40, 50, "yellow")
-//     await sleep(1000)
-//     utils.drawText("Match will start at 1", 40, 50, "yellow")
-//     await sleep(1000)
-// }
 
 function tournament_board(tours)
 {
-    console.log(tours)
     let  cptTour = 1;
     let toursObjs = {}
     let objectsCpt = 0;
 
-
+    // console.log(tours)
     while (cptTour - 1 < Object.keys(tours).length)
     {
         let tourClassName = 'username_round' + cptTour;
@@ -49,7 +38,7 @@ function getPlayersNumber(type)
     return types[type]
 }
 
-function sleep(ms) {
+async function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
@@ -63,72 +52,100 @@ function handelErrorUserFound(){
     nicknameField.style.border= '2px solid red';
 }
 
-function handelTournamentStart(socket, tours){
-    utils.changeContent(page.TournamentBoardPage())
-    // console.log("current match : " + data.currentMatch);
-    // console.log("next match : " + data.next_match);
-    tournament_board(tours)   
-    // await sleep(5000);
-    socket.send(JSON.stringify({
-        'action' : 'start_tournament'
-    }))
-    let start = document.getElementById("start")
-    start.onclick = async function start(){
-        utils.changeContent(page.beforStartMatch());
-        let lPlayerReady = true
-        let RPlayerReady = true
-        let lPlayerReadyBtn = document.getElementById('left-button')
-        let RPlayerReadyBtn = document.getElementById('right-button')
-        let timer = document.getElementById('timer')
-        if (lPlayerReadyBtn) {
-            lPlayerReadyBtn.addEventListener('click', function ready() {
-                if (lPlayerReady) {
-                    lPlayerReadyBtn.textContent = 'Ready';
-                    lPlayerReadyBtn.style.background = '#4896E2';
-                } else {
-                    lPlayerReadyBtn.textContent = 'Cancel';
-                    lPlayerReadyBtn.style.background = 'red';
-                }
-                lPlayerReady = !lPlayerReady;
-            });
-        }
-        
-        if (RPlayerReadyBtn) 
-        {
-            RPlayerReadyBtn.addEventListener('click', function ready() 
-            {
-                if (RPlayerReady)
-                {
-                    RPlayerReadyBtn.textContent = 'Ready';
-                    RPlayerReadyBtn.style.background = '#F35969';
-                }
-                else
-                {
-                    RPlayerReadyBtn.textContent = 'Cancel';
-                    RPlayerReadyBtn.style.background = 'red';
-                }
-                RPlayerReady = !RPlayerReady;
-            });
-        }
-        if (!RPlayerReady && !lPlayerReady){
-            for (let i = 0 ; i < 5; i ++)
-            {
-                timer.textContent += '.'
-                await sleep(1000)
-            }
-            update(socket)
-            utils.changeContent(page.gamePage())
-            socket.send(JSON.stringify({
-                'action' : 'start_match',
-            }))
-        }
-            
+function readyButton(PlayerStatus, PlayerReadyBtn)
+{
+    if (!PlayerStatus)
+    {
+        PlayerReadyBtn.style.background = "red"
+        PlayerReadyBtn.textContent = "cancel"
+    }
+    else
+    {
+        PlayerReadyBtn.style.background = "green"
+        PlayerReadyBtn.textContent = "Ready"
     }
 }
 
+let isCancelled = false;
+
+async function preparingMatch()
+{
+    let timer = document.getElementById('timer')
+    for (let i = 0; i < 2; i++)
+    {
+        console.log(i)
+        timer.textContent += "."
+        await sleep(1000)
+        if (isCancelled)
+        {
+            timer.textContent = ""
+            return true
+        }
+    }
+    return false
+}
+
+async function start_match(lPlayerStatus, rPlayerStatus, socket)
+{
+    if (lPlayerStatus && rPlayerStatus)
+        {
+            isCancelled = false;
+            if(await preparingMatch())
+                return;
+            utils.changeContent(page.gamePage())
+            update(socket)
+        socket.send(JSON.stringify({
+            'action' : 'start_match',
+        }))
+    }
+}
+
+function Playersreadiness(socket)
+{
+    let lPlayerStatus = false // not ready
+    let rPlayerStatus = false
+    let rPlayerReadyBtn = document.getElementById('right-button')
+    let lPlayerReadyBtn = document.getElementById('left-button')
+
+    if (lPlayerReadyBtn) {
+        lPlayerReadyBtn.addEventListener('click', async function ready() {
+            readyButton(lPlayerStatus, lPlayerReadyBtn)
+            lPlayerStatus = !lPlayerStatus
+            isCancelled = true; 
+            await start_match(lPlayerStatus, rPlayerStatus, socket)
+        });
+    }
+    if (rPlayerReadyBtn) 
+    {
+        rPlayerReadyBtn.addEventListener('click', async function ready() 
+        {
+            readyButton(rPlayerStatus, rPlayerReadyBtn)
+            rPlayerStatus = !rPlayerStatus
+            // Left player cancelled the match
+            isCancelled = true; 
+            await start_match(lPlayerStatus, rPlayerStatus, socket)
+        });
+    }
+}
+
+function handelTournamentStart(socket, data)
+{
+    utils.changeContent(page.TournamentBoardPage())
+    tournament_board(data.tournament_stats)   
+    let start = document.getElementById("start")
+    start.onclick = async function start()
+    {
+        utils.changeContent(page.beforStartMatch());
+        document.getElementById('lplayer_name').textContent = data.currentMatch[0] // left player
+        document.getElementById('rplayer_name').textContent =  data.currentMatch[1] // right player
+        Playersreadiness(socket);
+    }
+} 
+
 function render(data){
+    // console.log(data)
     let game_state = data.game_state
-    console.log("lplayer : " + data.lplayer_name)
+    // console.log("lplayer : " + data.lplayer_name)
     document.getElementById('lplayer_name').textContent = game_state.lplayer_name
     document.getElementById('rplayer_name').textContent =  game_state.rplayer_name
     document.getElementById('lplayer_score').textContent =  game_state.lplayer_score
@@ -143,32 +160,34 @@ function render(data){
 
 async function matchTournament(type) {
     let url = `ws://127.0.0.1:8000/ws/localTournament/` + type + '/'
-    const tounamentSockcet = new WebSocket(url);
+    const tournamentSockcet = new WebSocket(url);
 
-    tounamentSockcet.onopen = function(event) {
+    tournamentSockcet.onopen = function(event) {
         document.getElementById('countPlayers').textContent = countPlayers;
         document.getElementById('tourType').textContent = getPlayersNumber(type);
     };
 
-    tounamentSockcet.onmessage = async function(event) {
+    tournamentSockcet.onmessage = async function(event) {
         let data = JSON.parse(event.data);
 
         if (data.status == "userFound")
             handelErrorUserFound();
 
         if (data.status == 'players_ready')
-            handelTournamentStart(tounamentSockcet, data.tournament_stats)
+            handelTournamentStart(tournamentSockcet, data)
 
         if (data.status == 'render') 
             render(data);
 
-        if (data.status == 'game_over') {
-            tounamentSockcet.send(JSON.stringify({
-                'action' : 'next_match',
-            })) 
+        if (data.status == 'game_over') {        
+            handelTournamentStart(tournamentSockcet, data)
+            // tournamentSockcet.send(JSON.stringify({
+            //     'action' : 'next_match',
+            // })) 
         }
         if (data.status == 'next_tour'){
-            tounamentSockcet.send(JSON.stringify({
+            console.log("next tpir")
+            tournamentSockcet.send(JSON.stringify({
                 'action' : 'next_tour',
             })) 
 
@@ -177,13 +196,13 @@ async function matchTournament(type) {
             let tours = data.tournament
             let winner = data.winner
             utils.changeContent(page.Congratulations(winner))
-            tounamentSockcet.send(JSON.stringify({
+            tournamentSockcet.send(JSON.stringify({
                 'action' : 'fin_tournament',
             })) 
 
         }
     }
-    userJoin(tounamentSockcet)    
+    userJoin(tournamentSockcet)    
 };
 
 function userJoin(socket){
@@ -214,24 +233,31 @@ function userJoin(socket){
                     'action' : 'player_joined', 
                     'user' : nicknameField.value
                 }))
-                if (nicknameField)
-                    nicknameField.value = '' 
+                if (nicknameField){
+                    nicknameField.value = ''
+                }
             }
+            nicknameField.focus()
         }    
     }
 }
 
-function update(Sockcet)
-{  
-    document.addEventListener("keydown", (event) => {  
-        //console.log("key  : " + event.key)      
-        Sockcet.send(JSON.stringify({
-            'action'  : "move_player",
-            'key': event.key
-        }))
-    });
-}
 
+function update(Sockcet)
+{
+    // if(document.getElementsByName('game_container'))
+    // {
+        document.addEventListener("keydown", (event) => {  
+            //console.log("key  : " + event.key)      
+            Sockcet.send(JSON.stringify({
+                'action'  : "move_player",
+                'key': event.key
+            }))
+        });
+    
+    
+    // }
+}
 export function handelTournament(){
     
     let tour4 = document.getElementById('tour4')
