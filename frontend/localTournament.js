@@ -13,7 +13,7 @@ function tournament_board(tours)
     let toursObjs = {}
     let objectsCpt = 0;
 
-    // console.log(tours)
+    console.log(tours)
     while (cptTour - 1 < Object.keys(tours).length)
     {
         let tourClassName = 'username_round' + cptTour;
@@ -136,14 +136,14 @@ function handelTournamentStart(socket, data)
     start.onclick = async function start()
     {
         utils.changeContent(page.beforStartMatch());
-        document.getElementById('lplayer_name').textContent = data.currentMatch[0] // left player
-        document.getElementById('rplayer_name').textContent =  data.currentMatch[1] // right player
+        // document.getElementById('lplayer_name').textContent = data.currentMatch[0] // left player
+        // document.getElementById('rplayer_name').textContent =  data.currentMatch[1] // right player
         Playersreadiness(socket);
     }
 } 
 
 function render(data){
-    // console.log(data)
+    console.log(data)
     let game_state = data.game_state
     // console.log("lplayer : " + data.lplayer_name)
     document.getElementById('lplayer_name').textContent = game_state.lplayer_name
@@ -174,6 +174,7 @@ async function matchTournament(type) {
             handelErrorUserFound();
 
         if (data.status == 'players_ready')
+            // console.log(data.tournament_stats)
             handelTournamentStart(tournamentSockcet, data)
 
         if (data.status == 'render') 
@@ -192,7 +193,8 @@ async function matchTournament(type) {
             })) 
 
         }
-        if (data.status == 'fin_tournament'){
+        if (data.status == 'tournament_finiched'){
+            console.log("salina")
             let tours = data.tournament
             let winner = data.winner
             utils.changeContent(page.Congratulations(winner))
@@ -228,7 +230,7 @@ function userJoin(socket){
             }
             else{
                 countPlayers += 1;
-                document.getElementById('countPlayers').textContent = countPlayers;
+                document.getElementById('countPlayers').textContent = countPlayers; 
                 socket.send(JSON.stringify({
                     'action' : 'player_joined', 
                     'user' : nicknameField.value
