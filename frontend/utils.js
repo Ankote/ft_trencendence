@@ -72,14 +72,14 @@ function drawPlayer(player) {
 
 export function render(lplayer, rplayer, ball, table, net) {
     // Clear the cenves
-    if (!ctx)
-    {
+    // if (!ctx)
+    // {
         const canv = document.getElementById("table");
         canv.width = table.width 
         canv.height = table.height
         if (canv)
             ctx = canv.getContext("2d");
-    }
+    // }
     drawRect(0, 0, table.width, table.height, "#0B0D22");
     // Draw Net
     drawNet(table, net);

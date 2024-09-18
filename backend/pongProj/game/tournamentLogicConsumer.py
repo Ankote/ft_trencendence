@@ -1,6 +1,6 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .game import Player, Ball, Net, Table, PLAYER_WIDTH, PLAYER_HEIGHT, gameOver, movePlayer
-import json, asyncio, copy
+import json, asyncio, copy, random
 
 class TournamentLogicConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -82,8 +82,6 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
                     'status': 'players_ready',
                     'tournament_stats' : self.tours,
                     'currentMatch' : self.tours[self.tour][self.match_nbr]
-                    # 'currentMatch': self.tours[self.tour][self.match_nbr],
-                    # 'next_match' : self.tours[self.tour][self.next_match],
                 }))
     
     def getMaxPlayers(self):
@@ -98,6 +96,7 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
         return user in self.players
     
     def create_matchs(self):
+        random.shuffle(self.players)
         for i in range(0, len(self.players), 2):
             match = self.players[i:i + 2]
             self.matches.append(match)
@@ -119,7 +118,9 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
                 'ball': self.game_state['ball'].to_dict(),
                 'table': self.game_state['table'].to_dict(),
                 'lplayer_name' : self.tours[self.tour][self.match_nbr][0],
-                'rplayer_name' : self.tours[self.tour][self.match_nbr][1]
+                'rplayer_name' : self.tours[self.tour][self.match_nbr][1],
+                'lplayer_score' : self.game_state['lplayer'].score,
+                'rplayer_score' : self.game_state['rplayer'].score,
             }
             await self.send(text_data=json.dumps({
                     'status': 'render',
@@ -137,9 +138,7 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
             self.players.remove(self.tours[self.tour][self.match_nbr][0])
             winner_name = self.tours[self.tour][self.match_nbr][1]
         
-        await self.ft(winner_name)
-        print("here we go ahain")# self.tours[self.tour][self.match_nbr][self.next_player] = winner_name
-       
+        await self.winnerNextTour(winner_name)
     
         self.task.cancel()
         self.match_nbr += 1
@@ -165,15 +164,14 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
         self.game_state = {
                     'ball': Ball(),
                     'net': Net(),
-                    'lplayer': Player(1),
-                    'rplayer': Player(Table.width - PLAYER_WIDTH - 1),
+                    'lplayer': Player(10),
+                    'rplayer': Player(Table.width - PLAYER_WIDTH - 10),
                     'table': Table(),
                 }
         self.task =  asyncio.create_task(self.send_data_periodically())
 
     def create_tournament_dict(self):
         num_players = self.getMaxPlayers()
-        print(f"f :{num_players}")
         
         # Initialize the round number
         round_number = 0
@@ -205,12 +203,9 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
 
 
 
-    async def  ft(self, value):
-        print("ayoo")
+    async def  winnerNextTour(self, value):
         for i in range(len(self.tours)):
-            print(self.tours)
             for j in range(len(self.tours[i])):
-                print(self.tours[i])
                 if self.tours[i][j][0] == '':
                     self.tours[i][j][0] = value
                     return

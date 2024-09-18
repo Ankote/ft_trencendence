@@ -90,16 +90,17 @@ class Ball:
         self.radius		=	8.5
         self.speed 		=	BALL_START_SPEED
         self.color		=	"#D9D9D9"
-        self.velocityX 	=	-5
-        self.velocityY	=	5
+        self.velocityX 	=	-4.5
+        self.velocityY	=	4.5
 
     def update(self, lplayer, rplayer):
         selectPlayer = lplayer if self.x < Net.x else rplayer
         opponentP = lplayer if self.x > Net.x else rplayer
         # print(selectPlayer)
         if collision(self, selectPlayer):
-            self.velocityX  =   -   self.velocityX
-            self.speed      +=      BALL_DELTA_SPEED
+            self.velocityX  = -self.velocityX
+            self.x += PLAYER_WIDTH / 2 * self.velocityX
+            self.speed      +=  BALL_DELTA_SPEED
             selectPlayer.color = "#FFBB00"
         else:
             selectPlayer.color = "#FF00FF"

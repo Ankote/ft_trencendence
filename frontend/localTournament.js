@@ -12,8 +12,7 @@ function tournament_board(tours)
     let  cptTour = 1;
     let toursObjs = {}
     let objectsCpt = 0;
-
-    console.log(tours)
+    utils.changeContent(page.TournamentBoardPage())
     while (cptTour - 1 < Object.keys(tours).length)
     {
         let tourClassName = 'username_round' + cptTour;
@@ -73,7 +72,6 @@ async function preparingMatch()
     let timer = document.getElementById('timer')
     for (let i = 0; i < 2; i++)
     {
-        console.log(i)
         timer.textContent += "."
         await sleep(1000)
         if (isCancelled)
@@ -130,22 +128,20 @@ function Playersreadiness(socket)
 
 function handelTournamentStart(socket, data)
 {
-    utils.changeContent(page.TournamentBoardPage())
+   
     tournament_board(data.tournament_stats)   
     let start = document.getElementById("start")
     start.onclick = async function start()
     {
         utils.changeContent(page.beforStartMatch());
-        // document.getElementById('lplayer_name').textContent = data.currentMatch[0] // left player
-        // document.getElementById('rplayer_name').textContent =  data.currentMatch[1] // right player
+        document.getElementById('lplayer_name').textContent = data.currentMatch[0] // left player
+        document.getElementById('rplayer_name').textContent =  data.currentMatch[1] // right player
         Playersreadiness(socket);
     }
 } 
 
 function render(data){
-    console.log(data)
     let game_state = data.game_state
-    // console.log("lplayer : " + data.lplayer_name)
     document.getElementById('lplayer_name').textContent = game_state.lplayer_name
     document.getElementById('rplayer_name').textContent =  game_state.rplayer_name
     document.getElementById('lplayer_score').textContent =  game_state.lplayer_score
@@ -174,7 +170,6 @@ async function matchTournament(type) {
             handelErrorUserFound();
 
         if (data.status == 'players_ready')
-            // console.log(data.tournament_stats)
             handelTournamentStart(tournamentSockcet, data)
 
         if (data.status == 'render') 
@@ -187,20 +182,15 @@ async function matchTournament(type) {
             // })) 
         }
         if (data.status == 'next_tour'){
-            console.log("next tpir")
             tournamentSockcet.send(JSON.stringify({
                 'action' : 'next_tour',
             })) 
 
         }
         if (data.status == 'tournament_finiched'){
-            console.log("salina")
-            let tours = data.tournament
             let winner = data.winner
-            utils.changeContent(page.Congratulations(winner))
-            tournamentSockcet.send(JSON.stringify({
-                'action' : 'fin_tournament',
-            })) 
+            tournament_board(data.tournament_stats)
+            document.getElementById("start").style.display = "none"
 
         }
     }
@@ -224,7 +214,6 @@ function userJoin(socket){
         joinBtn.onclick = function join(){
             if (nicknameField.value == '')
             {
-                console.log("empty")
                 inputSection.classList.add('empty');
                 nicknameField.style.border= '2px solid red';
             }
