@@ -99,7 +99,7 @@ class Ball:
         # print(selectPlayer)
         if collision(self, selectPlayer):
             self.velocityX  = -self.velocityX
-            self.x += PLAYER_WIDTH / 2 * self.velocityX
+            # self.x += PLAYER_WIDTH / 2 * self.velocityX
             self.speed      +=  BALL_DELTA_SPEED
             selectPlayer.color = "#FFBB00"
         else:

@@ -1,5 +1,12 @@
+
+.game_container
+{
+    width: 65vw;
+    height: 40vw;
+}
+
 .keysInfo{
-    height: 48px;
+    height: 3%;
     width: inherit;
     display: flex;
     align-items: center;
@@ -8,70 +15,76 @@
     font-weight: 50;
     font-style: italic;
     color: #D0C8C8;
-    font-size: 10px;
+    /* background: red; */
 }
 
-.key{
-    font-family: 'Angkor';
-    font-weight: 700;
-    font-style: normal;
-    font-size: 20px;
-
-}
-
-.separate{
-    width: inherit;
-    height: 13px;
-    
-}
 
 .playersInfo{
     display: flex;
     width: inherit;
-    height: 60px;
+    height: 7%;
     background: #0E102C;
-    border-top-right-radius: 13px;
+    border-top-right-radius:10%;
     border-top-left-radius: 13px;
-    
+    /* background: yellow; */
 }
+
+.separate{
+    width: inherit;
+    height: 2%;
+    /* background: green; */
+
+    /* background:#06071b; */
+}
+
+.game{
+    width: inherit;
+    height: 88%;
+    background:#06071b;
+}
+
+#table{
+    width: inherit;
+    height: 100%;
+    background-color: #0B0D22;
+    box-shadow: 13px 13px 21px 15px rgba(6, 6, 6, 0.25);;
+}
+
+
+
 .player_img{
-    width: 67px;
-    height: inherit;
+    width: 5%;
+    height: 100%;
     background: red;
 }
 
 
-
-#lplayer_info{
-    border-bottom: 2px  #F35969  solid;
-}
-#rplayer_info{
-    border-bottom: 2px  #34CA54  solid;
-}
-
 #lplayer_img{
     background-image: url('../images/aankote.jpeg');
-    width: 67px;
-    height: 60px;
+    width: 5%;
+    height: 100%;
     background-size: 67px 60px;
-    border-top-left-radius: 13px;
+    border-top-left-radius: 10%;
+    background-size: cover; 
 }
 
 #rplayer_img{
     background-image: url('../images/abelhadj.jpg');
-    width: 67px;
-    height: 60px;
+    width: 5%;
+    height: 100%;
     background-size: 67px 60px;
-    border-top-right-radius: 13px;
+    border-top-right-radius:10%;
+    background-size: cover; 
 }
+
 
 .player_info{
     display: flex;
     text-align: center;
     align-items: center;
     justify-content: space-around;
-    border-top-right-radius: 13px;
-    width: 478px;
+    border-top-right-radius:10%;
+    width: 50%;
 }
 
 .player_name{
@@ -81,13 +94,6 @@
     font-weight: 700;
 }
 
-.game{ 
-    width: inherit;
-    height: 624px;
-    background: #0B0D22;
-
-}
-
 .player_score{
     font-family: 'Archivo';
     color: mistyrose;
@@ -95,11 +101,56 @@
     color: rgb(255, 220, 66);
 }
 
-#table{
-    width: inherit;
-    height: 624px;
-    background-color: #0B0D22;
-    box-shadow: 13px 13px 21px 15px rgba(6, 6, 6, 0.25);;
+#lplayer_info{
+    border-bottom: solid 2px #34CA54 ;
 }
 
+#rplayer_info{
+    border-bottom: solid 2px #F35969 ;
+    
+}
 
+@media (max-width: 1000px) {
+    .player_name {
+        font-size: 14px;
+    }
+    .player_score{
+        font-size: 40px ;
+    }
+    .keys{
+        font-size: 20px;
+
+    }
+}
+
+@media (max-width: 850px) {
+    .player_name {
+        font-size: 10px;
+    }
+    .player_score{
+        font-size: 15px;
+    }
+    .keys{
+        font-size: 10px;
+        
+    }
+}
+
+@media (max-width: 580px) {
+    .player_name {
+        font-size: 8px;
+    }
+    .player_score{
+        font-size: 10px;
+    }
+    .keys{
+        font-size: 8px;
+    }
+}
+
+/* 
+@media (min-width: 700px) {
+    .player_name {
+        font-size: 14px;
+    }
+} */

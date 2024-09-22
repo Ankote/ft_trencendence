@@ -13,7 +13,6 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
         self.user = self.scope["user"]
-        print(self.user)
         if self.user.is_authenticated:
             if await self.is_player_in_active_game(self.user.username):
                 print("player already in game!")
@@ -48,7 +47,7 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
         if self.user.username in self.__class__.waiting_players:
             self.__class__.waiting_players.remove(self.user.username)
 
-    async def match_players(self):
+    async def  match_players(self):
         if len(self.__class__.waiting_players) >= 2:
             print("Matching players.")
             player1 = await self.get_player_obj(self.__class__.waiting_players.pop(0)) 
