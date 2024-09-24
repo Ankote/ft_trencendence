@@ -16,6 +16,8 @@ class GameLogicConsumer(AsyncWebsocketConsumer):
         self.room = await self.get_room(self.room_name)
         self.player1 = await self.get_player1(self.room_name)
         self.player2 = await self.get_player2(self.room_name)
+        lplayer_infos = self.player_infos(self.player1)
+        rplayer_infos = self.player_infos(self.player2)
         
         # if self.room:
         #     print(f"Player 1: {self.room.player1.username}, Player 2: {self.room.player2.username}")
@@ -31,7 +33,14 @@ class GameLogicConsumer(AsyncWebsocketConsumer):
                 'rplayer': Player(Table.width - PLAYER_WIDTH - 1),
                 'table': Table(),
             }
-            self.__class__.playing_rooms[self.room_group_name]['task'] = asyncio.create_task(self.send_data_periodically())
+            await self.channel_layer.group_send(self.room_group_name,
+            {
+                'type': 'pre_match',
+                'action': 'pre_match',
+                'lplayer_obj' : lplayer_infos,
+                'rplayer_obj' : rplayer_infos,
+            })
+            # self.__class__.playing_rooms[self.room_group_name]['task'] = asyncio.create_task(self.send_data_periodically())
 
     async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
@@ -43,8 +52,9 @@ class GameLogicConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
+        action = text_data_json.get('action')
         key = text_data_json.get('key')
-
+        # if (action == 'pre_match')
         room = await self.get_room(self.room_name)
         player1 =await  self.get_player1(self.room_name)
         # print(player1)
@@ -81,12 +91,18 @@ class GameLogicConsumer(AsyncWebsocketConsumer):
             score = game_state['lplayer'].score
         else:
             score = game_state['rplayer'].score
-        # print(score)?
         return{
             'first_name' : player.first_name,
             'last_name' : player.last_name,
             'username' : player.username,
             'score': score
+        }   
+      
+    async def player_infos(self, player):
+        return{
+            'first_name' : player.first_name,
+            'last_name' : player.last_name,
+            'username' : player.username,
         }
     
 
@@ -136,7 +152,14 @@ class GameLogicConsumer(AsyncWebsocketConsumer):
                 }
             )
             await asyncio.sleep(0.009)
-
+ 
+    async def pre_match(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'pre_match',
+            'action': event['pre_match'],
+            'lplayer' : event['lplayer'],
+            'rplayer' : event['rplayer'],
+        }))
     async def game_stats(self, event):
         data = event['data']
         await self.send(text_data=json.dumps(data))

@@ -14,7 +14,18 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user = self.scope["user"]
         if self.user.is_authenticated:
-            if await self.is_player_in_active_game(self.user.username):
+            player = await self.get_player_obj('aankote')
+            player_infos = await self.player_dict(player)
+            print(player_infos)
+            if self.user.username in self.__class__.waiting_players:
+                print("deja")
+                await self.accept()
+                await self.send(text_data=json.dumps({
+                        'status': 'deja',
+                        'username': self.user.username,
+                        }))
+                
+            elif await self.is_player_in_active_game(self.user.username):
                 print("player already in game!")
             else:
                 self.add_to_waiting_list()
@@ -22,10 +33,9 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
                 await self.accept()
 
                 await self.send(text_data=json.dumps({
-                        'status': 'player_joined',
-                        'username': self.user.username,
+                        'status': 'waiting_opponent',
+                        'player': player_infos
                         }))
-            
         else:
             print("Unauthenticated user.")
             await self.close()
@@ -37,6 +47,14 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
         room_name = await self.mark_room_inactive()
         if room_name:
             await self.notify_opponent(room_name)
+
+    # async def receive(self, text_data):
+    #     text_data_json = json.loads(text_data)
+    #     action = text_data_json.get('action')
+    #     if action == "start_match":
+    #         await self.channel_layer.group_send(room_name,
+                                                
+    #                                             )
 
     def add_to_waiting_list(self):
         self.__class__.channel_name_map[self.user.username] = self.channel_name
@@ -52,6 +70,8 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
             print("Matching players.")
             player1 = await self.get_player_obj(self.__class__.waiting_players.pop(0)) 
             player2 = await self.get_player_obj(self.__class__.waiting_players.pop(0))
+            player1_infos = await self.player_dict(player1)
+            player2_infos = await self.player_dict(player2)
             room_name = await self.generate_unique_room_name()
 
             player1_channel = await self.get_channel_name(player1.username)
@@ -65,8 +85,10 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_send(
                 room_name,
                 {
-                    'type': 'start_game',
-                    'room_name': room_name
+                    'type': 'players_matched',
+                    'room_name': room_name,
+                    'lplayer' : player1_infos,
+                    'rplayer' : player2_infos
                 }
             )
 
@@ -118,11 +140,13 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
             Q(player1__username=self.user.username, is_active=True) | Q(player2__username=self.user.username, is_active=True) ).first()
         return room.name
     
-    async def start_game(self, event):
+    async def players_matched(self, event):
         await self.send(text_data=json.dumps({
-            'type': 'start_game',
+            'type': 'players_matched',
             'room_name': event['room_name'],
-            'status': 'start_game'
+            'status': 'players_matched',
+            'lplayer' : event['lplayer'],
+            'rplayer' : event['rplayer'],
         }))
 
     @sync_to_async 
@@ -130,13 +154,6 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
         user = User.objects.filter(
             Q(username=username)).first()
         return user
-    
-    async def start_game(self, event):
-        await self.send(text_data=json.dumps({
-            'type': 'start_game',
-            'room_name': event['room_name'],
-            'status': 'start_game'
-        }))
 
     async def notify_opponent(self, room_name):
         await self.channel_layer.group_send(
@@ -152,3 +169,10 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
             'type': 'opponent_left',
             'status': event['status']
         }))
+            
+    async def player_dict(self, player):
+        return{
+            'first_name' : player.first_name,
+            'last_name' : player.last_name,
+            'username' : player.username,
+        }

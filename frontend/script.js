@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", event => {
     if (singleBtn) {
         //console.log("found")
         singleBtn.onclick = function display() {
-                utils.changeContent(page.watingPlayersPage());
+                // utils.changeContent(page.watingPlayersPage());
                 matchMakingHandling();
         };
     }

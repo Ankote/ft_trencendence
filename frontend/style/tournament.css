@@ -1,30 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Notable&display=swap');
 
-/* html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%; /* Ensure the body takes up the full height */
-/* } */
-
-/* body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #13152A; 
-    color: #fff;
-}  */
-
 .tournament {
     width: 90%;
     height: 100%;
     /* background-color: red;  */
     text-align: center;
     margin: auto;
-    font-size: 12px;
-    font-family:'Notable';
 }
-
 
 .tour_divisions{
     display: flex;
@@ -96,6 +78,8 @@
 
 .username{
     color: #13152A;
+    font-size: 12px;
+    font-family:'Notable';
 }
 
 .col1{
@@ -184,7 +168,7 @@
 .div3>.trophy{
     width: 90%;
     height: 50%;
-    background-image: url(../images/trophy1.png);
+    background-image: url(images/trophy1.png);
     background-repeat: no-repeat;
     background-size:contain;
     background-position: center;
@@ -218,26 +202,24 @@
     background-color:#625e7e63;
     width: 100%;
     height: 5%;
+    /* border-radius: 5px; */
     border: none;
     border-bottom: 4px solid aqua;
     color: #fff;
     text-align: center;
     font-size: 10px;
-    font-family:'Notable';
 }
 
-.div3>#start{
+.div3>#join{
     width: 80%;
-    height: 7%;
-    background-color: #88ADE7;
-    color: #fff;
-    border-radius: 10px;
+    height: 5%;
+    background-color: #FFEB3B;
+    color: black;
+    border-radius: 20px;
     border: none;
-    font-size: 20px;
-    font-family:'Notable';
 }
 
-.div3>#start:hover{
+.div3>#join:hover{
     opacity: 75%;
     color: rgb(16, 62, 77);
 }
@@ -254,7 +236,6 @@ input::placeholder {
     margin-top: 10px;
 }
 
-.div3>.tournament_title{
+.div3>title{
     color: #fff;
-    font-size: 25px;
 }

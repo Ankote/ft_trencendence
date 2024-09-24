@@ -91,3 +91,8 @@ export function render(lplayer, rplayer, ball, table, net) {
         //display scors
 
 }
+
+
+export async function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}

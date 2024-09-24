@@ -37,10 +37,6 @@ function getPlayersNumber(type)
     return types[type]
 }
 
-async function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 function handelErrorUserFound(){
           
     let nicknameField = document.getElementById('nickname')
@@ -73,7 +69,7 @@ async function preparingMatch()
     for (let i = 0; i < 2; i++)
     {
         timer.textContent += "."
-        await sleep(1000)
+        await utils.sleep(1000)
         if (isCancelled)
         {
             timer.textContent = ""

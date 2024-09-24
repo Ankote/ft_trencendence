@@ -42,6 +42,11 @@ function startGame(data) {
 
     gameSocket.onmessage = function(event) {
         let data = JSON.parse(event.data);
+        console.log(data)
+        if (data.action == 'pre_match')
+        {
+            console.log("pre match")
+        }
         if (data.action == 'changes') {
             player = data.player;
             opponent = data.opponent;
@@ -65,12 +70,21 @@ export function matchMakingHandling() {
 
     const matchingSocket = new WebSocket(url);
 
-    matchingSocket.onmessage = function(event) {
+    matchingSocket.onmessage = async function(event) {
         let data = JSON.parse(event.data);
-        if (data.status == 'player_joined') {
+        if (data.status == 'waiting_opponent')
+        {
+            console.log(data.player)
+            utils.changeContent(data.player.username + " " + data.player.first_name + " " + data.player.last_name);
             ID = data.username
         }
-        if (data.status == 'start_game') {
+        if (data.status == 'deja') {
+           utils.changeContent("deja playing")
+        }
+        if (data.status == 'players_matched') {
+            console.log(data.lplayer)
+            console.log(data.rplayer)
+            await utils.sleep(3000)
             startGame(data)
         }
         if (data.status == 'leaving') {

@@ -1,4 +1,26 @@
+/* html, body, #page {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    box-sizing: border-box;
+}
 
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}  
+  
+.game_body {
+    width: 100vw;
+    height: 100vh; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background:#2E305A;
+} */
+  
 .game_container
 {
     width: 65vw;
@@ -15,6 +37,7 @@
     font-weight: 50;
     font-style: italic;
     color: #D0C8C8;
+    font-size: 10px;
     /* background: red; */
 }
 
@@ -41,6 +64,7 @@
     width: inherit;
     height: 88%;
     background:#06071b;
+    position: relative;
 }
 
 #table{
@@ -104,53 +128,28 @@
 #lplayer_info{
     border-bottom: solid 2px #34CA54 ;
 }
-
 #rplayer_info{
     border-bottom: solid 2px #F35969 ;
     
 }
 
-@media (max-width: 1000px) {
-    .player_name {
-        font-size: 14px;
-    }
-    .player_score{
-        font-size: 40px ;
-    }
-    .keys{
-        font-size: 20px;
-
-    }
+.players_carts {
+    width: 9vw;
+    height: 9vw;
+    background: red;
+    position: absolute;
 }
 
-@media (max-width: 850px) {
-    .player_name {
-        font-size: 10px;
-    }
-    .player_score{
-        font-size: 15px;
-    }
-    .keys{
-        font-size: 10px;
-        
-    }
+.player1 {
+    top: 37%;
+    left: 14%;
+}
+.player2 {
+    top: 37%;
+    right: 14%;
 }
 
-@media (max-width: 580px) {
-    .player_name {
-        font-size: 8px;
-    }
-    .player_score{
-        font-size: 10px;
-    }
-    .keys{
-        font-size: 8px;
-    }
-}
-
-/* 
-@media (min-width: 700px) {
-    .player_name {
-        font-size: 14px;
-    }
+/* .playersInfo,.keysInfo
+{
+    display: none;
 } */
