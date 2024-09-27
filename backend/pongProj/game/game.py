@@ -2,7 +2,7 @@ PLAYER_HEIGHT 		= 128
 PLAYER_WIDTH 		=	16
 BALL_START_SPEED  	= 1.1
 PLAYER_SPEED  	= 15
-BALL_DELTA_SPEED  	= .01
+BALL_DELTA_SPEED  	= .008
 
 class   Table:
         width = 1086

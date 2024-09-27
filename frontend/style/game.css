@@ -149,7 +149,45 @@ body {
     right: 14%;
 }
 
+.start_message {
+    position: absolute;
+    top: 37%;
+    right: 40%;
+    font-size: 34px;
+    color: rgb(129, 120, 120);
+    width: 20%;
+    text-align: center;
+    display: block;
+}
+
+
 /* .playersInfo,.keysInfo
 {
     display: none;
 } */
+
+@media (max-width: 299px) {
+    .start_message {
+        font-size: 6px;
+    }
+}
+
+@media (min-width: 300px) and (max-width: 800px) {
+    .start_message {
+        font-size: 11px;
+    }
+}
+
+/* For screens between 600px and 1400px */
+@media (min-width: 801px) and (max-width: 1400px) {
+    .start_message {
+        font-size: 17px;
+    }
+}
+
+/* For screens between 1401px and 1920px */
+@media (min-width: 1401px) and (max-width: 1920px) {
+    .start_message {
+        font-size: 25px;
+    }
+}

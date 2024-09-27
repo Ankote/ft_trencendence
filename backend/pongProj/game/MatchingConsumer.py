@@ -14,9 +14,10 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.user = self.scope["user"]
         if self.user.is_authenticated:
-            player = await self.get_player_obj('aankote')
+            player = await self.get_player_obj(self.user)
             player_infos = await self.player_dict(player)
-            print(player_infos)
+            await self.accept()
+            print(f"player :{player_infos}")
             if self.user.username in self.__class__.waiting_players:
                 print("deja")
                 await self.accept()
@@ -28,14 +29,14 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
             elif await self.is_player_in_active_game(self.user.username):
                 print("player already in game!")
             else:
+                print("hello")
                 self.add_to_waiting_list()
-                await self.match_players()
-                await self.accept()
-
                 await self.send(text_data=json.dumps({
                         'status': 'waiting_opponent',
                         'player': player_infos
                         }))
+                await self.match_players()
+
         else:
             print("Unauthenticated user.")
             await self.close()
