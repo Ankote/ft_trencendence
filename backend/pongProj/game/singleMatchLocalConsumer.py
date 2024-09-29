@@ -28,7 +28,6 @@ class SingleMatchLocalConsumer(AsyncWebsocketConsumer):
         print(close_code)
         pass
 
-
     async def send_data_periodically(self):
 
         while True:

@@ -1,0 +1,250 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap');
+
+html, body, #page {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    /* box-sizing: border-box; */
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}  
+  
+.game_body {
+    width: 100vw;
+    height: 100vh; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background:#2E305A;
+}
+
+.page_container{
+    width: 69%;
+    height: 100%;
+    background-color: #2c2c36;
+    justify-content: center;
+    align-items: center;
+}
+
+.titles{
+    width: 100%;
+    height: 20%;
+    display: block;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-sizing: border-box;
+    padding-top: 4%;
+}
+
+.oneVone{
+    color: white;
+    text-align: center;
+    font-weight: 800;
+    font-size: 33px;
+    letter-spacing: 7px;
+
+}
+
+.custom{
+    color: #D4C9C9 ;
+    text-align: center;
+    font-size: 13px;
+    padding-top: 10px;
+
+}
+
+.blocks{
+    width: 100%;
+    height: 80%;
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+    /* background: red; */
+}
+
+.customTable{
+    display: flex;
+    flex-direction: column;
+    width: 31%;
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: center;
+    position: relative;;
+}
+
+.customPlayers{
+    display: flex;
+    flex-direction: column;
+    width: 69%;
+    height: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* background: green; */
+}
+
+.customTabelTitle{
+    width: 100%;
+}
+
+.tables{
+    border-radius: 15px;
+    width: 60%;
+    height: calc(30vw / 3);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-top: 5%;
+    box-sizing: border-box;
+    color: white;
+}
+.classicTbl{
+    /* background: #3A3A50; */
+}
+
+
+.footballTbl:hover{
+    width: 58%;
+    background: #3A3A45;
+}
+
+.standardTbl:hover{
+    background: #3A3A45;
+    width: 58%;
+}
+
+.classicTbl:hover{
+    background: #3A3A45;
+    width: 58%;
+}
+.classicTbl>.table{
+    background: #000;
+}
+.standardTbl>.table{
+    background: #4B4848;
+}
+.footballTbl>.table{
+    background: repeating-linear-gradient(
+        90deg, 
+        #4CAF50, /* Darker green */
+        #4CAF50 5%, 
+        #8BC34A 5%, /* Lighter green */
+        #8BC34A 10%
+    );
+}
+.table{
+    width: 80%;
+    height: 6.3vw;
+    border: solid 1px white;
+    border-radius: 10px;
+    position: relative;
+}
+
+.table>.lpaddle,.table>.rpaddle
+{
+    width: 1%;
+    height: 20%;
+    background: #fff;
+    position: absolute;
+}
+.table>.lpaddle{
+    top: 40%;
+    left: 3%;
+}
+.table>.rpaddle{
+    top: 40%;
+    right: 3%;
+}
+
+.table>.net{
+    height: 90%;
+    position: absolute;
+    border-left: 1px dashed white;
+    left: 50%;
+    top: 5%;
+}
+
+.table>.ball{
+    position: absolute;
+    width: .3vw;
+    height: .3vw;
+    border-radius: 50%;
+    background: white;
+    left: 25%;
+    top: 40%;
+}
+
+.type{
+    padding-top:5%;
+    box-sizing: border-box;
+}
+
+
+.selected {
+    background-color: #3A3A50; /* Clicked color */
+}
+
+.customTable::after{
+    position: absolute;
+    content: '';
+    width: 1px;
+    height: 70%;
+    background: #4c4b4b;
+    right: 0;
+    top: 22%;
+}
+
+.players{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.player
+{
+    width: 50%;
+    height: 60%;
+    display: flex;
+    justify-content: center;
+}
+
+.player1{
+    color: #1E90FF;
+}
+
+.player2{
+    color: #F35969;
+    
+}
+.title
+{
+    width: 100%;
+    height: 6%;
+    color: white;
+    display: flex;
+    justify-content: center;
+    font-weight: 600;
+}
+
+.customPlayersTitle{
+}
+.player-title{
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 24px;
+    letter-spacing: 0;
+    line-height: 1.2; /* Adjust based on your design needs */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+}

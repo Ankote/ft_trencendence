@@ -1,0 +1,192 @@
+html, body, #page {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}  
+  
+.game_body {
+    width: 100vw;
+    height: 100vh; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background:#2E305A;
+}
+  
+.game_container
+{
+    width: 65vw;
+    height: 40vw;
+}
+
+.keysInfo{
+    height: 3%;
+    width: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 50;
+    font-style: italic;
+    color: #D0C8C8;
+    font-size: 10px;
+    /* background: red; */
+}
+
+
+.playersInfo{
+    display: flex;
+    width: inherit;
+    height: 7%;
+    background: #0E102C;
+    border-top-right-radius:10%;
+    border-top-left-radius: 13px;
+    /* background: yellow; */
+}
+
+.separate{
+    width: inherit;
+    height: 2%;
+    /* background: green; */
+
+    /* background:#06071b; */
+}
+
+.game{
+    width: inherit;
+    height: 88%;
+    background:#06071b;
+    position: relative;
+}
+
+#table{
+    width: inherit;
+    height: 100%;
+    background-color: #0B0D22;
+    box-shadow: 13px 13px 21px 15px rgba(6, 6, 6, 0.25);;
+}
+
+
+
+.player_img{
+    width: 5%;
+    height: 100%;
+    background: red;
+}
+
+
+#lplayer_img{
+    background-image: url('./images/aankote.jpeg');
+    width: 5%;
+    height: 100%;
+    background-size: 67px 60px;
+    border-top-left-radius: 10%;
+    background-size: cover; 
+}
+
+#rplayer_img{
+    background-image: url('./images/abelhadj.jpg');
+    width: 5%;
+    height: 100%;
+    background-size: 67px 60px;
+    border-top-right-radius:10%;
+    background-size: cover; 
+}
+
+
+.player_info{
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: space-around;
+    border-top-right-radius:10%;
+    width: 50%;
+}
+
+.player_name{
+    font-family: 'alata';
+    font-size: 14px;
+    color: white;
+    font-weight: 700;
+}
+
+.player_score{
+    font-family: 'Archivo';
+    color: mistyrose;
+    font-size: 40px;
+    color: rgb(255, 220, 66);
+}
+
+#lplayer_info{
+    border-bottom: solid 2px #34CA54 ;
+}
+#rplayer_info{
+    border-bottom: solid 2px #F35969 ;
+    
+}
+
+.players_carts {
+    width: 9vw;
+    height: 9vw;
+    background: red;
+    position: absolute;
+}
+
+.player1 {
+    top: 37%;
+    left: 14%;
+}
+.player2 {
+    top: 37%;
+    right: 14%;
+}
+
+.players_message {
+    position: absolute;
+    top: 37%;
+    right: 40%;
+    font-size: 34px;
+    color: rgb(129, 120, 120);
+    width: 20%;
+    text-align: center;
+    display: block;
+}
+
+.playersInfo,.keysInfo
+{
+    display: none;
+}
+
+@media (max-width: 299px) {
+    .players_message {
+        font-size: 6px;
+    }
+}
+
+@media (min-width: 300px) and (max-width: 800px) {
+    .players_message {
+        font-size: 11px;
+    }
+}
+
+/* For screens between 600px and 1400px */
+@media (min-width: 801px) and (max-width: 1400px) {
+    .players_message {
+        font-size: 17px;
+    }
+}
+
+/* For screens between 1401px and 1920px */
+@media (min-width: 1401px) and (max-width: 1920px) {
+    .players_message {
+        font-size: 25px;
+    }
+}
