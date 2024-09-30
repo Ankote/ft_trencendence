@@ -185,6 +185,10 @@ body {
     background-color: #3A3A50; /* Clicked color */
 }
 
+.paddles>.selectedPaddle {
+    border-color: #1E90FF; /* Clicked color */
+}
+
 .customTable::after{
     position: absolute;
     content: '';
@@ -246,6 +250,7 @@ body {
 
 .player>input
 {
+    position: relative;
     width: 60%;
     height: 2.8vw;
     background: #3C3C47;
@@ -296,10 +301,6 @@ body {
     border-radius: 7px;
 }
 
-.paddles>.basic{
-    border: solid 1px #1E90FF;
-}
-
 .basic>div{
     background-color: #D9D9D9;
 }
@@ -308,6 +309,9 @@ body {
 }
 .ice>div{
     background-color: #1E90FF;
+}
+.paddles>div:hover{
+    opacity: .75;
 }
 
 .player>button{
@@ -346,3 +350,11 @@ button:hover{
     font-size: 18px;
 }
 
+.player1>input::after {
+    content: "Name field cannot be empty*";
+    color: red;
+    position: absolute;
+    left: 5%;
+    font-size: 12px;
+    top: 5%;
+}
