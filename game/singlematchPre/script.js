@@ -1,77 +1,115 @@
-    let tables = document.getElementsByClassName('tables');
-    tables[0].classList.add('selected');
-    for (let i = 0; i < tables.length; i++) {
-        tables[i].addEventListener('click', function() {
-            for (let j = 0; j < tables.length; j++) {
-                tables[j].classList.remove('selected');
-            }
-            this.classList.add('selected');
-            console.log(this.getAttribute('data-value'));
-        });    
-    }
+// Utility function to handle table selection
+function handleTableClick(tables) {
+    tables.forEach(table => {
+        table.addEventListener('click', function () {
+            tables.forEach(t => t.classList.remove('selectedTable')); // Remove 'selected' from all tables
+            this.classList.add('selectedTable'); // Add 'selected' to the clicked table
+            console.log(this.getAttribute('data-value')); // Log the data-value attribute
+        });
+    });
+}
 
-    let lPlayerPaddel = document.querySelectorAll(".player1 > .paddles > div");
-    
-    function paddleClickHandler() {
-        for (let j = 0; j < lPlayerPaddel.length; j++) {
-            lPlayerPaddel[j].classList.remove('selectedPaddle');
-        }
+// Initialize tables
+function initTables() {
+    const tables = document.getElementsByClassName('tables');
+    if (tables.length > 0) {
+        tables[0].classList.add('selected'); // Select the first table by default
+        handleTableClick(Array.from(tables)); // Convert to array and set up event listeners
+    }
+}
+
+// Utility function for handling paddles click
+function paddleClickHandler(paddles) {
+    return function () {
+        paddles.forEach(paddle => paddle.classList.remove('selectedPaddle'));
         this.classList.add('selectedPaddle');
-        console.log(this.getAttribute('data-value'));
+        
+        console.log(setColor(this.getAttribute('data-value')));
     }
-    
-    // Adding click event listeners to paddles
-    lPlayerPaddel[0].classList.add('selectedPaddle');
-    for (let i = 0; i < lPlayerPaddel.length; i++) {
-        lPlayerPaddel[i].addEventListener('click', paddleClickHandler);
-    }
+}
 
-    let rPlayerPaddel = document.querySelectorAll(".player2 > .paddles > div")
-    rPlayerPaddel[0].classList.add('selectedPaddle');
-    for (let i = 0; i < rPlayerPaddel.length; i++){
-        rPlayerPaddel[i].addEventListener('click', function() {
-            for (let j = 0; j < rPlayerPaddel.length; j++) {
-                rPlayerPaddel[j].classList.remove('selectedPaddle');
-            }
-            this.classList.add('selectedPaddle');
-            console.log(this.getAttribute('data-value'));
-        });    
-    }
+// Utility function for adding/removing hover effect
+function togglePaddleHover(paddles, enable) {
+    paddles.forEach(paddle => {
+        if (enable) {
+            paddle.addEventListener('mouseover', handleMouseOver);
+            paddle.addEventListener('mouseout', handleMouseOut);
+        } else {
+            paddle.removeEventListener('mouseover', handleMouseOver);
+            paddle.removeEventListener('mouseout', handleMouseOut);
+        }
+    });
+}
 
-    let readyButton = document.querySelectorAll(".player > button")
-    let nameField = document.querySelectorAll("input")
-    let startGameBtn = document.getElementById("startGame")
-    if (startGameBtn)
-    {
-        startGameBtn.addEventListener("click", event=>{
-            if (nameField[0].textContent == '')
-            {
-
-            }
-            })
+// Generalized Ready Handler for both players
+function handlePlayerReady(paddles, inputField, readyBtn, clickHandler) {
+    if (readyBtn.textContent === "Ready") {
+        togglePaddleHover(paddles, false);  // Disable hover effect
+        inputField.disabled = true;
+        inputField.style.border = "none";
+        inputField.style.opacity = '0.25'
+        readyBtn.textContent = "Cancel";
+        paddles.forEach(paddel=>paddel.style.opacity = '0.25')
+        paddles.forEach(paddle => paddle.removeEventListener('click', clickHandler));
+    } else {
+        togglePaddleHover(paddles, true);  // Enable hover effect
+        inputField.disabled = false;
+        inputField.style.border = "solid 1px #666673";
+        inputField.style.opacity = '1'
+        readyBtn.textContent = "Ready";
+        paddles.forEach(paddel=>paddel.style.opacity = '1')
+        paddles.forEach(paddle => paddle.addEventListener('click', clickHandler));
     }
+}
 
-    for (let i = 0; i < readyButton.length; i++){
-        readyButton[i].addEventListener('click', function() {
-            if (this.textContent == "Ready")
-            {
-                nameField[i].disabled = true
-                nameField[i].style.border = "none"
-                nameField[i].style.color = '#5A5A62'
-                this.textContent = "Cancel"
-                for (let i = 0; i < lPlayerPaddel.length; i++) {
-                    lPlayerPaddel[i].removeEventListener('click', paddleClickHandler);
-                }
-            }
-            else
-            {
-                nameField[i].disabled = false
-                nameField[i].style.border = " solid 1px #666673"
-                nameField[i].style.color = '#D7D7DB'
-                this.textContent = "Ready"
-                for (let i = 0; i < lPlayerPaddel.length; i++) {
-                    lPlayerPaddel[i].addEventListener('click', paddleClickHandler);
-                }
-            }
-        });    
-    }
+// Hover effect handlers
+function handleMouseOver() {
+    this.style.opacity = '0.75';
+}
+
+function handleMouseOut() {
+    this.style.opacity = '1';
+}
+
+// Initialize paddles for both players
+function initPaddles(playerSelector, selectedClass) {
+    const paddles = Array.from(document.querySelectorAll(`${playerSelector} > .paddles > div`));
+    paddles[0].classList.add(selectedClass);  // Mark the first paddle as selected
+    return paddles;
+}
+
+
+// Set Color depend paddels selected
+function setColor(paddlName)
+{
+    const colorsMap = {'ice' : '#1E90FF', 'blood' : '#F35969', 'basic' : '#D9D9D9'}
+    return colorsMap[paddlName]
+}
+
+
+// Initialize the game
+function initGame() {
+    const lPlayerPaddles = initPaddles(".player1", 'selectedPaddle');
+    const rPlayerPaddles = initPaddles(".player2", 'selectedPaddle');
+
+    const lPlayerReadyBtn = document.querySelector(".player1 > button");
+    const rPlayerReadyBtn = document.querySelector(".player2 > button");
+    const lInputText = document.querySelector(".player1 input");
+    const rInputText = document.querySelector(".player2 input");
+
+    const lClickHandler = paddleClickHandler(lPlayerPaddles, 'selectedPaddle');
+    const rClickHandler = paddleClickHandler(rPlayerPaddles, 'selectedPaddle');
+
+    lPlayerPaddles.forEach(paddle => paddle.addEventListener('click', lClickHandler));
+    rPlayerPaddles.forEach(paddle => paddle.addEventListener('click', rClickHandler));
+
+    togglePaddleHover(lPlayerPaddles, true);
+    togglePaddleHover(rPlayerPaddles, true);
+
+    lPlayerReadyBtn.addEventListener('click', () => handlePlayerReady(lPlayerPaddles, lInputText, lPlayerReadyBtn, lClickHandler));
+    rPlayerReadyBtn.addEventListener('click', () => handlePlayerReady(rPlayerPaddles, rInputText, rPlayerReadyBtn, rClickHandler));
+    initTables(); // Initialize tables
+}
+
+// Call the initialization function
+initGame();

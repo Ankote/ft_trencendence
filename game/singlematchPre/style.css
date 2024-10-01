@@ -181,7 +181,7 @@ body {
 }
 
 
-.selected {
+.selectedTable {
     background-color: #3A3A50; /* Clicked color */
 }
 
@@ -310,9 +310,9 @@ body {
 .ice>div{
     background-color: #1E90FF;
 }
-.paddles>div:hover{
+/* .paddles>div:hover{
     opacity: .75;
-}
+} */
 
 .player>button{
     width: 60%;
