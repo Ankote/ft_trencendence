@@ -151,7 +151,81 @@ export function gamePage() {
         </div>
     `;
 }
+export function singleMatchPage() {
+    return `
+    <div class="game_body">
+        <div class="page_container">
+            <div class="single-titles">
+                <div class="oneVone"> 1 V 1 Match</div>
+                <div class="custom">Cunstomize Your Game</div>
+            </div>
+                <div class="blocks">
+                    <div class="customTable">
+                        <div class="customTabelTitle single-title">Choose A table Them</div>
+                        <div class="classicTbl tables" data-value="classic">
+                            <div class="table">
+                                <div class="lpaddle"></div>
+                                <div class="rpaddle"></div>
+                                <div class="ball"></div>
+                                <div class="net"></div>
+                            </div>
+                            <div class="type">Classic</div>
+                        </div>
 
+                        <div class="standardTbl tables" data-value="standard">
+                            <div class="table">
+                                <div class="lpaddle"></div>
+                                <div class="rpaddle"></div>
+                                <div class="ball"></div>
+                                <div class="net"></div></div>
+                            <div class="type">Standard</div>
+                        </div>
+
+                            <div class="footballTbl tables" data-value="foot">
+                                <div class="table">
+                                    <div class="lpaddle"></div>
+                                    <div class="rpaddle"></div>
+                                    <div class="ball"></div>
+                                    <div class="net"></div></div>
+                                <div class="type">Football</div>
+                            </div>
+                    </div>
+
+                    <div class="customPlayers">
+                            <div class="customPlayersTitle single-title">Customize your player</div>
+                            <div class="players">
+                                <div class="player1 player">
+                                    <div class="player-title">Player 1</div>
+                                    <input type="text" class="playerName" placeholder="Alias/name" id ='player01'>
+                                    <div class="choosePaddle">Choose paddle</div>
+                                    <div class="paddles">
+                                        <div class="basic" data-value="basic"><div></div></div>
+                                        <div class="blood" data-value="blood"><div></div></div>
+                                        <div class="ice" data-value="ice"><div></div></div>
+                                    </div>
+                                    <button>Ready</button>
+                                </div>
+                                <div class="player2 player">
+                                    <div class="player-title">Player 2</div>
+                                    <input type="text" class="playerName" placeholder="Alias/name" id ='player02'>
+                                    <div class="choosePaddle">Choose paddle</div>
+                                    <div class="paddles">
+                                        <div class="basic" data-value="basic"><div></div></div>
+                                        <div class="blood" data-value="blood"><div></div></div>
+                                        <div class="ice" data-value="ice"><div></div></div>
+                                    </div>
+                                    <button>Ready</button>
+                                </div>
+                            </div>
+                            <button id="startGame" disabled>Start Game</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    `
+}
 export function tournamentPlayersJoinPage() {
 
     return `

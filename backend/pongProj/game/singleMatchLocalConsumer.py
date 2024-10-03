@@ -14,13 +14,24 @@ class SingleMatchLocalConsumer(AsyncWebsocketConsumer):
             'rplayer': Player(Table.width - PLAYER_WIDTH - 20),
             'table': Table(),
         }
-        asyncio.create_task(self.send_data_periodically())
-        pass
+        await self.send(text_data=json.dumps({
+                    'action': 'custom_match',
+                    }))
+        print("youu")
 
     async def receive(self, text_data):
+
         text_data_json = json.loads(text_data)
-        key = text_data_json.get('key')
-        movePlayer(key, self.game_state['lplayer'], self.game_state['rplayer'], self.game_state['table']) 
+        action = text_data_json.get('action')
+        if action and action == 'startGame':
+            print("startde")
+            await self.send(text_data=json.dumps({
+                    'action': 'startGame'
+                    }))
+            asyncio.create_task(self.send_data_periodically())
+        elif action == "move_player":
+            key = text_data_json.get('key')
+            movePlayer(key, self.game_state['lplayer'], self.game_state['rplayer'], self.game_state['table']) 
 
         pass
 

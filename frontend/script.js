@@ -3,7 +3,8 @@ import * as page from './pages.js';
 import * as localT from './localTournament.js'
 import {  matchMakingHandling } from './singleMatchRemote.js';
 import * as utils from './utils.js';
-import * as sigleLocal from './singleMatchLocal.js'
+import * as singleLocalDashboard from './singleLocalDashboard.js'
+import * as singleLocal from './singleMatchLocal.js'
 // Select table
 
 utils.changeContent(page.game_dashboard());
@@ -16,8 +17,7 @@ document.addEventListener("DOMContentLoaded", event => {
     if (singleBtn) {
         singleBtn.addEventListener("click",event =>{
                 console.log("clicked")
-                // utils.changeContent(page.watingPlayersPage());
-                matchMakingHandling();
+                // matchMakingHandling();
         } )
     }
     if (tourBtn) {
@@ -30,7 +30,9 @@ document.addEventListener("DOMContentLoaded", event => {
     if (oneVSoneBtn)
     { 
         oneVSoneBtn.addEventListener("click", event=> {
-        sigleLocal.singleMatchHandle();
+        singleLocal.singleMatchHandle();
+        // utils.changeContent(page.singleMatchPage());
+        // sigleLocal.initGame()
         });
     }
 })
