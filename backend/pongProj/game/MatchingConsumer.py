@@ -29,11 +29,17 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
             elif await self.is_player_in_active_game(self.user.username):
                 print("player already in game!")
             else:
-                print("hello")
                 self.add_to_waiting_list()
+                if (len (self.waiting_players) == 1):
+                    order = 1
+                else:
+                    order = 12  
+
                 await self.send(text_data=json.dumps({
                         'status': 'waiting_opponent',
-                        'player': player_infos
+                        'player': player_infos,
+                        'image': f'./images/{self.user.username}.jpeg',
+                        'order' : order
                         }))
                 await self.match_players()
 
@@ -68,7 +74,6 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
 
     async def  match_players(self):
         if len(self.__class__.waiting_players) >= 2:
-            print("Matching players.")
             player1 = await self.get_player_obj(self.__class__.waiting_players.pop(0)) 
             player2 = await self.get_player_obj(self.__class__.waiting_players.pop(0))
             player1_infos = await self.player_dict(player1)
@@ -82,14 +87,15 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_add(room_name, player2_channel)
 
             await self.create_room(room_name,player1, player2)
-
             await self.channel_layer.group_send(
                 room_name,
                 {
                     'type': 'players_matched',
                     'room_name': room_name,
-                    'lplayer' : player1_infos,
-                    'rplayer' : player2_infos
+                    'player1' : player1_infos,
+                    'player2' : player2_infos,
+                    'player1Image' : './images/aankote.jpeg',
+                    'player2Image' : './images/aayoub.jpeg'
                 }
             )
 
@@ -146,8 +152,10 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
             'type': 'players_matched',
             'room_name': event['room_name'],
             'status': 'players_matched',
-            'lplayer' : event['lplayer'],
-            'rplayer' : event['rplayer'],
+            'player1' : event['player1'],
+            'player2' : event['player2'],
+            'player1Image' : event['player1Image'],
+            'player2Image' :  event['player2Image']
         }))
 
     @sync_to_async 

@@ -136,7 +136,7 @@ function setColor(paddlName)
         'basic'		: '#D9D9D9',
         'classic'	: '#000000',
         'standard'	: '#4B4848',
-        'foot' 	: '#4A9561'
+        'foot' 	    : '#003F1C'
     }
     return colorsMap[paddlName]
 }

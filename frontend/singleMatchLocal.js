@@ -1,5 +1,5 @@
 
-import * as singleLocalDashboard from './singleLocalDashboard.js'
+import * as sglPre from './singleLocalDashboard.js'
 import * as page from './pages.js' 
 import * as utils from './utils.js' 
 let lplayer = {}
@@ -23,30 +23,24 @@ function update(Sockcet)
 async function handelStartGame(socket)
 {
     utils.changeContent(page.gamePage())
-    for (let i = 3; i > 0; i--){
-        console.log("match will start at " + i)
-        await utils.sleep(1000)
-    }
+    await utils.handel_prematch(sglPre.gameState.playerName['player1'], sglPre.gameState.playerName['player2'])
     socket.send(JSON.stringify({
         'action' : 'startGame'
     }))
 }
 
-function  startGame(socket, game_state)
+async function  startGame(socket, game_state)
 {
     lplayer = game_state.lplayer;
     rplayer = game_state.rplayer;
     net = game_state.net;;
     ball = game_state.ball;
     table = game_state.table;
-    table.color = singleLocalDashboard.gameState.selectedTable
-    console.log(table.color)
-    lplayer.color = singleLocalDashboard.gameState.selectedPaddel.player1
-    rplayer.color = singleLocalDashboard.gameState.selectedPaddel.player2
-    document.getElementById("lplayer_name").textContent = singleLocalDashboard.gameState.playerName.player1
-    document.getElementById("rplayer_name").textContent = singleLocalDashboard.gameState.playerName.player2
+    table.color = sglPre.gameState.selectedTable
+    lplayer.color = sglPre.gameState.selectedPaddel.player1
+    rplayer.color = sglPre.gameState.selectedPaddel.player2
     document.getElementById("rplayer_score").textContent = game_state.rplayer.score;
-    document.getElementById("lplayer_score").textContent = game_state.lplayer.score;
+    document.getElementById("lplayer_score").textContent = game_state.lplayer.score;  
     utils.render(lplayer, rplayer,ball, table, net)
 }
 
@@ -58,9 +52,9 @@ export function singleMatchHandle()
     matchtSockcet.onopen = function(event)
     {
         utils.changeContent(page.singleMatchPage())
-        singleLocalDashboard.initGame()
+        sglPre.initGame()
     }
-    matchtSockcet.onmessage = function(event){
+    matchtSockcet.onmessage = async function(event){
         const data = JSON.parse(event.data);
         if (data.action == 'custom_match'){
             const startBtn = document.getElementById('startGame');
@@ -80,8 +74,11 @@ export function singleMatchHandle()
         }
         if (data.action == 'changes'){
             const game_state = data.game_state
-            startGame(matchtSockcet, game_state)
+           await  startGame(matchtSockcet, game_state)
 
+        }
+        if (data.action == 'game_over') {
+            console.log(data.winner)
         }
     }
 }

@@ -31,7 +31,6 @@ class GameLogicConsumer(AsyncWebsocketConsumer):
         # print("here")
         print(self.__class__.joined_players)
         if self.room_group_name not in self.__class__.playing_rooms and  self.__class__.joined_players and  self.__class__.joined_players % 2 == 0:
-            print("not in")
             self.__class__.playing_rooms[self.room_group_name] = {
                 'ball': Ball(),
                 'net': Net(),

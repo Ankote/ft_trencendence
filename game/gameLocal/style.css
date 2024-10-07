@@ -1,37 +1,34 @@
-html, body {
+html, body, #page {
     margin: 0;
     padding: 0;
+    width: 100vw;
+    height: 100vh;
+    box-sizing: border-box;
 }
 
 body {
     display: flex;
     justify-content: center;
-    align-items: center;/* Setting the background color directly on the body */
-    width: 1920px;
-    height: 920px;
-}
-
+    align-items: center;
+}  
+  
 .game_body {
-    width: 1920px;
-    height: 920px;
+    width: 100vw;
+    height: 100vh; 
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #1D2046; 
+    background:#2E305A;
 }
-
-.game_container{
-    /* background-color: red; */
-    width: 1086;
-    height: 746px;
-    /* margin-top: 77px; */
-    margin: auto ;
-    margin-top: 79px;
-    align-items: center;
+  
+.game_container
+{
+    width: 65vw;
+    height: 40vw;
 }
 
 .keysInfo{
-    height: 48px;
+    height: 3%;
     width: inherit;
     display: flex;
     align-items: center;
@@ -40,84 +37,85 @@ body {
     font-weight: 50;
     font-style: italic;
     color: #D0C8C8;
-    font-size: 10;
+    font-size: 10px;
+    /* background: red; */
 }
 
-.key{
-    font-family: 'Angkor';
-    font-weight: 700;
-    font-style: normal;
-    font-size: 20;
-
-}
-
-.separate{
-    width: inherit;
-    height: 13;
-    
-}
 
 .playersInfo{
     display: flex;
     width: inherit;
-    height: 60px;
+    height: 7%;
     background: #0E102C;
-    border-top-right-radius: 13px;
+    border-top-right-radius:10%;
     border-top-left-radius: 13px;
-    
+    /* background: yellow; */
 }
+
+.separate{
+    width: inherit;
+    height: 2%;
+    /* background: green; */
+
+    /* background:#06071b; */
+}
+
+.game{
+    width: inherit;
+    height: 88%;
+    background:#06071b;
+    position: relative;
+}
+
+#table{
+    width: inherit;
+    height: 100%;
+    /* background-color: #0B0D22; */
+    box-shadow: 13px 13px 21px 15px rgba(6, 6, 6, 0.25);;
+}
+
+
+
 .player_img{
-    width: 67px;
-    height: inherit;
+    width: 5%;
+    height: 100%;
     background: red;
 }
 
 
-
-#lplayer_info{
-    border-bottom: 2px  #F35969  solid;
-}
-#rplayer_info{
-    border-bottom: 2px  #34CA54  solid;
-}
-
 #lplayer_img{
-    background-image: url('images/aankote.jpeg');
-    width: 67px;
-    height: 60px;
+    background-image: url('../images/aankote.jpeg');
+    width: 5%;
+    height: 100%;
     background-size: 67px 60px;
-    border-top-left-radius: 13px;
+    border-top-left-radius: 10%;
+    background-size: cover; 
 }
 
 #rplayer_img{
-    background-image: url('images/abelhadj.jpg');
-    width: 67px;
-    height: 60px;
+    background-image: url('../images/abelhadj.jpg');
+    width: 5%;
+    height: 100%;
     background-size: 67px 60px;
-    border-top-right-radius: 13px;
+    border-top-right-radius:10%;
+    background-size: cover; 
 }
+
 
 .player_info{
     display: flex;
     text-align: center;
     align-items: center;
     justify-content: space-around;
-    border-top-right-radius: 13px;
-    width: 478px;
+    border-top-right-radius:10%;
+    width: 50%;
 }
 
 .player_name{
     font-family: 'alata';
-    font-size: 14;
+    font-size: 14px;
     color: white;
     font-weight: 700;
-}
-
-.game{
-    width: inherit;
-    height: 624px;
-    background: #0B0D22;
-
 }
 
 .player_score{
@@ -127,11 +125,191 @@ body {
     color: rgb(255, 220, 66);
 }
 
-#table{
-    width: inherit;
-    height: 624;
-    background-color: #0B0D22;
-    box-shadow: 13px 13px 21px 15px rgba(6, 6, 6, 0.25);;
+#lplayer_info{
+    border-bottom: solid 2px #34CA54 ;
+}
+#rplayer_info{
+    border-bottom: solid 2px #F35969 ;
+    
+}
+
+.players_carts {
+    width: 10vw;
+    height: 10vw;
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* background: rgb(167, 81, 216); */
+    position: absolute;
+    /* Add this line to ensure the flex children use the full space */
+    box-sizing: border-box;
+}
+.vs{
+    position: absolute;
+    color: white;
+    font-size: 50px;
+    top: 33%;
+    left: 50%;
+
+}
+
+.image_block {
+    width: 80%;
+    height: 80%;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    /* position: absolute; */
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    /* Add this line to ensure the flex children use the full space */
+    box-sizing: border-box;
+}
+
+.player2>.image_block{
+
+    /* animation: pulse 1s  infinite linear; */
+}
+
+.image{
+    width: 85%;
+    height: 85%;
+    background: url(images/aankote.jpeg);
+    background-size: cover;
+    border-radius: 50%;
+    /* Ensure box-sizing is correct here as well */
+    box-sizing: border-box;
+}
+
+.name_block{
+    color: white;
+}
+
+.game>.player1 {
+    top: 33%;
+    left: 14%;
+}
+
+
+@keyframes breathing {
+    0% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        background-color: rgba(255, 255, 255, 0.3);
+    }
+    50% {
+        transform: scale(0.8);
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+    100% {
+        transform: scale(1);
+        background-color: rgba(255, 255, 255, 0.3);
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+.game>.player2 {
+    top: 33%;
+    right: 14%;
+}
+
+.start_message {
+    position: absolute;
+    top: 37%;
+    right: 40%;
+    font-size: 34px;
+    color: rgb(129, 120, 120);
+    width: 20%;
+    text-align: center;
+    display: block;
+}
+
+
+/* .playersInfo,.keysInfo
+{
+    display: none;
+} */
+
+@media (max-width: 299px) {
+    .start_message {
+        font-size: 6px;
+    }
+}
+
+@media (min-width: 300px) and (max-width: 800px) {
+    .start_message {
+        font-size: 11px;
+    }
+}
+
+/* For screens between 600px and 1400px */
+@media (min-width: 801px) and (max-width: 1400px) {
+    .start_message {
+        font-size: 17px;
+    }
+}
+
+/* For screens between 1401px and 1920px */
+@media (min-width: 1401px) and (max-width: 1920px) {
+    .start_message {
+        font-size: 25px;
+    }
+}
+
+@keyframes animate{
+    from{
+        scale: 0.1;
+        left: 0;
+    }
+    to {
+        scale: 1;
+        left: 35%;
+    }
+}
+/* 
+@keyframes animate{
+    from{
+        opacity: 0.5;
+        background-color: #06071b;
+    }
+    to {
+        opacity: 1;
+        background-color: #64d2ee;
+    }
+} */
+
+.results-div{
+    position: absolute;
+    width: 30%;
+    height: 25vw;
+    background: red;
+    top: 10%;
+    left: calc(35%);
+    animation: animate 0.3s   linear;
 }
 
 

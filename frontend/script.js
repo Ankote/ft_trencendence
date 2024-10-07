@@ -16,8 +16,7 @@ document.addEventListener("DOMContentLoaded", event => {
 
     if (singleBtn) {
         singleBtn.addEventListener("click",event =>{
-                console.log("clicked")
-                // matchMakingHandling();
+                matchMakingHandling();
         } )
     }
     if (tourBtn) {

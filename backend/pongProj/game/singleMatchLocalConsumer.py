@@ -17,14 +17,12 @@ class SingleMatchLocalConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
                     'action': 'custom_match',
                     }))
-        print("youu")
 
     async def receive(self, text_data):
 
         text_data_json = json.loads(text_data)
         action = text_data_json.get('action')
         if action and action == 'startGame':
-            print("startde")
             await self.send(text_data=json.dumps({
                     'action': 'startGame'
                     }))
@@ -36,7 +34,6 @@ class SingleMatchLocalConsumer(AsyncWebsocketConsumer):
         pass
 
     async def disconnect(self, close_code):
-        print(close_code)
         pass
 
     async def send_data_periodically(self):
@@ -60,13 +57,16 @@ class SingleMatchLocalConsumer(AsyncWebsocketConsumer):
                     'action': 'changes',
                     'game_state': data,
                     }))
-            await asyncio.sleep(0.009)
+            await asyncio.sleep(0.01)
 
     async def endGame(self):
+        winner = ""
+        if (self.game_state['lplayer'].score > self.game_state['rplayer'].score):
+            winner = "player1"
+        else:
+            winner = "player2"
+
         await self.send(text_data=json.dumps({
                 'action': 'game_over',
+                'winner' : winner
                 }))
-        pass
-
-
-    pass

@@ -10,7 +10,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-}  
+}   */
   
 .game_body {
     width: 100vw;
@@ -19,7 +19,7 @@ body {
     justify-content: center;
     align-items: center;
     background:#2E305A;
-} */
+}
   
 .game_container
 {
@@ -79,12 +79,11 @@ body {
 .player_img{
     width: 5%;
     height: 100%;
-    background: red;
 }
 
 
 #lplayer_img{
-    background-image: url('../images/aankote.jpeg');
+    /* background-image: url('../images/aankote.jpeg'); */
     width: 5%;
     height: 100%;
     background-size: 67px 60px;
@@ -93,7 +92,7 @@ body {
 }
 
 #rplayer_img{
-    background-image: url('../images/abelhadj.jpg');
+    /* background-image: url('../images/abelhadj.jpg'); */
     width: 5%;
     height: 100%;
     background-size: 67px 60px;
@@ -134,18 +133,113 @@ body {
 }
 
 .players_carts {
-    width: 9vw;
-    height: 9vw;
-    background: red;
+    width: 10vw;
+    height: 10vw;
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* background: rgb(167, 81, 216); */
     position: absolute;
+    /* Add this line to ensure the flex children use the full space */
+    box-sizing: border-box;
 }
 
-.player1 {
-    top: 37%;
+.vs{
+    position: absolute;
+    color: white;
+    font-size: 50px;
+    top: 40%;
+    left: 48%;
+    font-family: 'Montserrat', sans-serif;
+
+}
+.image_block {
+    width: 80%;
+    height: 80%;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    /* position: absolute; */
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    /* Add this line to ensure the flex children use the full space */
+    box-sizing: border-box;
+}
+
+.image{
+    width: 85%;
+    height: 85%;
+    /* background: url(../images/aankote.jpeg); */
+    background-size: cover;
+    border-radius: 50%;
+    /* Ensure box-sizing is correct here as well */
+    box-sizing: border-box;
+}
+
+.name_block{
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.game>.player1 {
+    top: 33%;
     left: 14%;
 }
-.player2 {
-    top: 37%;
+
+
+@keyframes breathing {
+    0% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        background-color: rgba(255, 255, 255, 0.3);
+    }
+    50% {
+        transform: scale(0.8);
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+    100% {
+        transform: scale(1);
+        background-color: rgba(255, 255, 255, 0.3);
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes animate{
+    from{
+        opacity: 0.5;
+        background-color: #06071b;
+    }
+    to {
+        opacity: 1;
+        background-color: #64d2ee;
+    }
+}
+
+.game>.player2 {
+    top: 33%;
     right: 14%;
 }
 

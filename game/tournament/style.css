@@ -3,8 +3,8 @@
 html, body {
     margin: 0;
     padding: 0;
-    width: 100%;
-    height: 100%; /* Ensure the body takes up the full height */
+    width: 100vw;
+    height: 100vh; /* Ensure the body takes up the full height */
 }
 
 body {
@@ -16,8 +16,8 @@ body {
 }
 
 .game_body {
-    width: 100%;
-    height: 100%; /* Take the full height of the body */
+    width: 100vw;
+    height: 100vh; /* Take the full height of the body */
     display: flex;
     background-color: #1D1852; /* Background color for game body */
 }

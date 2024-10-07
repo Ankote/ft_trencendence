@@ -9,24 +9,6 @@ let net = {}
 let ball = {}
 let table = {}
 
-async function handel_prematch(lplayer, rplayer){
-    setPlayersValues(lplayer, rplayer)
-    let message  = document.getElementById('start_message')
-    if (message)
-    {
-        message.style.display = "block"
-        message.innerHTML = '<div>The match is going to  start at</div> <spane id="timeToStart"></spane>'
-    }
-    let timer= document.getElementById('timeToStart')
-    if(timer){
-        for (let i = 3; i > 0; i --){
-            timer.textContent = i;
-            await utils.sleep(1000)
-        }
-    }
-    if(message)
-        message.style.display="none"
-}
 
 function update(Sockcet)
 {  
@@ -37,23 +19,7 @@ function update(Sockcet)
     });
 }
 
-function setPlayersValues(player1, player2){
-    let lplayer_name = document.getElementById('lplayer_name')
-    let rplayer_name = document.getElementById('rplayer_name')
-    if (lplayer_name && rplayer_name){
-        lplayer_name.textContent = player1.username
-        rplayer_name.textContent = player2.username
-    }
-}
 
-function setPlayersScore(player1, player2){
-    let lplayer_score = document.getElementById('lplayer_score')
-    let rplayer_score = document.getElementById('rplayer_score')
-    if (lplayer_score && rplayer_score){
-        lplayer_score.textContent = player1.score
-        rplayer_score.textContent = player2.score
-    }
-}
 
 function startGame(data) {
     let url = `ws://127.0.0.1:8000/ws/game/${data.room_name}/${ID}/`;
@@ -66,10 +32,9 @@ function startGame(data) {
         let data = JSON.parse(event.data);
         if (data.action == 'handel_prematch')
         {
-            console.log(data.lplayer_infos)
             let lplayer = data.lplayer_obj
             let rplayer = data.rplayer_obj
-            await handel_prematch(lplayer, rplayer)
+            await utils.handel_prematch(lplayer.username, rplayer.username)
             gameSocket.send(JSON.stringify({
                 'action': 'start_match'
             }))
@@ -80,7 +45,7 @@ function startGame(data) {
             net = data.net;
             ball = data.ball;
             table = data.table;
-            setPlayersScore(data.lplayer_obj, data.rplayer_obj)
+            utils.setPlayersScore(data.lplayer_obj, data.rplayer_obj)
             utils.render(player, opponent,ball,table,net)
         }
         if (data.action == 'game_over') {
@@ -97,36 +62,79 @@ export function matchMakingHandling() {
 
     const matchingSocket = new WebSocket(url);
 
+    let player1_cart;
+    let player2_cart;
+    let player1Name;
+    let player2Name;
+    let opponent;
+    let player1Image;
+    let player2Image;
+    let vs;
     matchingSocket.onmessage = async function(event) {
         let data = JSON.parse(event.data);
+        // players_info = querySelector('.playersInfo')
+        // players_info.style.display = 'none'
         if (data.status == 'waiting_opponent')
         {
+            console.log("here we go again")
             utils.changeContent(page.gamePage());
-            let message  = document.getElementById('start_message')
-            let player_cart  = document.getElementById('player1')
-            let opponent_cart  = document.getElementById('player2')
-            player_cart.style.display = "block"
-            opponent_cart.style.display = "block"
-            player_cart.textContent = data.player.username
-            opponent_cart.textContent = "looking .."
+            player1_cart  = document.getElementById('player1');
+            player2_cart  = document.getElementById('player2');
+            player1Name  = document.querySelector('#player1>.name_block');
+            player2Name  = document.querySelector('#player2>.name_block');
+            vs  = document.querySelector('.vs');
+            player1Image = document.querySelector('#player1>.image_block>.image');
+            player2Image = document.querySelector('#player2>.image_block>.image');
+            player1_cart.style.display = "block";
+            player2_cart.style.display = "block";
+            // to chick if the player is first or second
+            if (data.order == 1)
+            {
+                opponent  = document.querySelector('#player2>.image_block')
+                player1Name.textContent = data.player.username;
+                player2Name.textContent = "Looking ...";
+                player1Image.style.backgroundImage =  `url(${data.image})`;
+                player2Image.style.backgroundImage = "url(./images/opponent.png)";
+            }
+            else{
+                opponent  = document.querySelector('#player1>.image_block')
+                player2Name.textContent = data.player.username;
+                player1Name.textContent = "Looking ...";
+                player2Image.style.backgroundImage =  `url(${data.image})`;
+                player1Image.style.backgroundImage = "url(./images/opponent.png)";
+            }
+            utils.startPulseAnimation(opponent);
             // message.textContent = 'Waiting Opponent . . .' ;
             ID = data.player.username
         }
         if (data.status == 'deja') {
-           utils.changeContent("deja playing")
+           utils.changeContent("deja playing");
         }
         if (data.status == 'players_matched') {
-
-            await utils.sleep(2000)
-            startGame(data)
+            utils.stopPulseAnimation(opponent);
+            await utils.sleep(1000);
+            player1Name.textContent = data.player1.username;
+            player2Name.textContent = data.player2.username;
+            player1Image.style.backgroundImage =  `url(${data.player1Image})`;
+            player2Image.style.backgroundImage =  `url(${data.player2Image})`;
+            await utils.sleep(3000)
+            player1Image = document.getElementById('lplayer_img');
+            player2Image = document.getElementById('rplayer_img')
+            player1_cart.style.opacity = "0";
+            player2_cart.style.opacity = "0";
+            vs.style.opacity = "0";
+            player1Image.style.backgroundImage =  `url(${data.player1Image})`;
+            player2Image.style.backgroundImage =  `url(${data.player2Image})`;
+            // player2Name.textContent = data.player2.username
+            const carts = Array.from(document.getElementsByClassName('players_carts'));
+            carts.forEach(cart=> cart.style.display = 'none');
+            startGame(data);
         }
         if (data.status == 'leaving') {
             utils.changeContent(leavingGamePage())
-
         }
         if (data.status == 'changes') {
-            const gameData = data.data
-
+            const gameData = data.data;
         }
     };
 }
