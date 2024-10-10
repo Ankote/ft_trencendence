@@ -1,33 +1,56 @@
 
-function logicTournament(room_name) {
-    let url = `ws://127.0.0.1:8000/ws/tournamentLogic/` + room_name + '/'
-    const tournamentLogicSocket = new WebSocket(url);
-    tournamentLogicSocket.onopen = function(event) {
-        //console.log("connection stablished logic")
-    };
+import * as utils from './utils.js'
+import * as page from './pages.js'
 
+
+function userJoin()
+{
+    // const username = document.getElementById('username')
+    // console.log(username.value)
 }
 
-export function matchTournament() {
-    let url = `ws://127.0.0.1:8000/ws/tournament/` + type + '/'
-    const tounamentSockcet = new WebSocket(url);
+async function matchTournament(type){
+    let url = `ws://127.0.0.1:8000/ws/remoteTournament/` + type + '/';
+    const socket = new WebSocket(url)
+    const joinBtn = document.getElementById("joinBtn")
 
-    tounamentSockcet.onopen = function(event) {
-        //console.log("connection stablished")
-        tounamentSockcet.send(JSON.stringify({
-            'id': ID,
-            'username': username
+    joinBtn.addEventListener("click", ()=>{
+        const username = document.getElementById('username').value
+        console.log(username)
+        socket.send(JSON.stringify({
+            'action' : 'player_joined',
+            'nickname' : username,
         }))
-    };
+    });
+}
 
-    tounamentSockcet.onmessage = function(event) {
-        //console.log("message recieved")
+export function handelRemoteTournament(){
+    
+    let tour4 = document.getElementById('tour4')
+    let tour8 = document.getElementById('tour8')
+    let tour16 = document.getElementById('tour16')
+    let type
 
-        let data = JSON.parse(event.data);
-        //console.log(data)
-        if (data.status == 'waiting') {
-
-            //console.log("waiting")
+    if (tour4) {
+        tour4.onclick = function setType() {
+            type = "tour4"
+            utils.changeContent(page.nickname());
+            matchTournament(type);
         }
-    };
-};
+    }
+
+    if (tour8) {
+        tour8.onclick = function setType() {
+            type = "tour8"
+            utils.changeContent(page.tournamentPlayersJoinPage());
+            matchTournament(type);
+        }
+    }
+    if (tour16) {
+        tour16.onclick = function setType() {
+            type = "tour16"
+            utils.changeContent(page.tournamentPlayersJoinPage());
+            matchTournament(type);
+        }
+    }
+}

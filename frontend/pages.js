@@ -19,6 +19,11 @@ export function game_dashboard() {
                     <div class="texts_button type_txt">Tournament</div>
                     <div class="texts_button icon_txt trophy_icon">icon</div>
                 </div>
+                <div class="type_button" id="Remot_tour_button">
+                    <div class="texts_button play_txt">play</div>
+                    <div class="texts_button type_txt">Remote Tournament</div>
+                    <div class="texts_button icon_txt trophy_icon">icon</div>
+                </div>
             </div>
         </section>
     </div>
@@ -264,13 +269,13 @@ export function TournamentBoardPage() {
                 <div class="div div1">
                     <div class="player_round1 player1 lplayer">
                         <div class="col1">
-                            <div class="username_round1 username" id = "player1">player 1</div>
+                            <div class="username_round1 username" id = "player1">Waiting...</div>
                         </div>
                     </div>
 
                     <div class="player_round1 player2 lplayer">
                         <div class="col1">
-                            <div class="username_round1 username" id = "player2">player 2</div>
+                            <div class="username_round1 username" id = "player2">Waiting...</div>
                         </div>
                     </div>
                 </div>
@@ -279,7 +284,7 @@ export function TournamentBoardPage() {
 
                     <div class="player_round2 player1">
                         <div class="col1">
-                            <div class="username_round2 username" id = "player11">player 1</div>
+                            <div class="username_round2 username" id = "player11"></div>
                         </div>
                     </div>
                 </div>
@@ -287,7 +292,7 @@ export function TournamentBoardPage() {
                 <div class="div div3">
                     <div class="tournament_title">pong game tournament</div>
                     <div class="trophy"></div>
-                    <div class="username_round3 winner">Player 1</div>
+                    <div class="username_round3 winner"></div>
                     <!-- <div class="champion_str">champion</div> -->
                    <!-- <input class="users_field" type="text" placeholder="username/nickname" id="nickname">-->
                     <button id="start">Start</button>
@@ -297,7 +302,7 @@ export function TournamentBoardPage() {
 
                     <div class="player_round2 player1">
                         <div class="col1">
-                            <div class="username_round2 username" id = "player1">player 3</div>
+                            <div class="username_round2 username" id = "player1"></div>
                         </div>
                     </div>
                 </div>
@@ -305,13 +310,13 @@ export function TournamentBoardPage() {
                 <div class="div div5">
                     <div class="player_round1 player1 rplayer">
                         <div class="col1">
-                            <div class="username_round1 username" id = "player3">player 3</div>
+                            <div class="username_round1 username" id = "player3">Waiting...</div>
                         </div>
                     </div>
 
                     <div class="player_round1 player2 rplayer">
                         <div class="col1">
-                            <div class="username_round1 username" id = "player4">player 4</div>
+                            <div class="username_round1 username" id = "player4">Waiting...</div>
                         </div>
                     </div>
 
@@ -323,7 +328,16 @@ export function TournamentBoardPage() {
 	`
 };
 
+export function nickname()
+{
+    return `
+    <div class="input-container">
+        <h1>Enter Username</h1>
+        <input type="text" id="username" placeholder="Enter your username" />
+        <button id='joinBtn'>Submit</button>
+    </div>`
 
+}
 export function watingPlayersPage() {
 
     return `

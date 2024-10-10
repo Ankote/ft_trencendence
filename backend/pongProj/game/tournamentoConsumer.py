@@ -1,132 +1,156 @@
+
 from channels.generic.websocket import AsyncWebsocketConsumer
+from .game import Player, Ball, Net, Table, PLAYER_WIDTH, PLAYER_HEIGHT, gameOver, movePlayer
+import json, asyncio, copy, random
 from asgiref.sync import sync_to_async
-from .models import Tournament, singleMatch, matchTournament, userTournament, User
-import time
-import json
+from .models import Tournament, userTournament, User
 from django.db.models import Q
+import time
 
-class TournamentConsumer(AsyncWebsocketConsumer):
+class TournamentRemote(AsyncWebsocketConsumer):
+    tour_name = ""
     waiting_players = []
+    matches = []
     channel_name_map = {}
-    nickname_map = {}
-    room_name = ""
-
+    tours = {}
+    match_nbr = 0
+    tour = 0
+    next_match = 0
+    next_player = 0
+    next_tour = 0
+    tour_obj = None
     async def connect(self):
-        self.user = self.scope["user"]
-        self.nickname = self.scope['url_route']['kwargs']['nickname']
-        await self.accept()  # Accept the WebSocket connection
-        print("Matching players.")
-        
-        if not self.__class__.waiting_players:
-            self.__class__.room_name = await self.create_tournamentRoom()
-            await self.create_tournament(self.__class__.room_name)
-            print(self.__class__.room_name)
-            print("Matching players.")
-        
-        await self.channel_layer.group_add(self.__class__.room_name, self.channel_name)
-        await self.channel_layer.group_send(
-            self.__class__.room_name ,
-            {
-                'type'      : 'tournament_created',
-                'status'    : "waiting"
-            }
-        )
-        await self.add_to_waiting_list()
-        await self.match_Players()
 
-    async def disconnect(self, close_code):
-        if self.user.username in self.__class__.waiting_players:
-            self.__class__.waiting_players.remove(self.user.username)
-            del self.__class__.channel_name_map[self.user.username]
-            del self.__class__.nickname_map[self.user.username]
-
+        await self.accept()
+        self.tourType = self.scope['url_route']['kwargs']['type']
+        self.user  = self.scope["user"]
+        self.player = await self.get_player_obj(self.user.username)
+        if len (self.__class__.waiting_players) == 0:
+            self.create_tournament_dict()
+            self.__class__.tour_name = await self.generate_unique_Tournament_name()
+            await self.create_Tournament(self.__class__.tour_name, self.getMaxPlayers())
+            self.__class__.tour_obj = await self.get_Tournament_obj(self.__class__.tour_name)
     async def receive(self, text_data):
-        data = json.loads(text_data)
-        message = data.get('message', '')
+        text_data_json = json.loads(text_data)
+        action = text_data_json.get('action')
+        username = text_data_json.get('nickname') 
 
-        # Handle the incoming message
-        print(f"Received message: {message}")
+        if action == 'player_joined':
+            if (not self.userExists(username)):
+                self.add_to_waiting_list(username) # add user to waiting list
+                self.playerAlias = username
+                await self.player_join_tournament(self.__class__.tour_obj, self.player, self.playerAlias)
 
-    async def match_Players(self):
-        tour_obj = await self.get_tour_obj(self.__class__.room_name)
-        if len(self.__class__.waiting_players) == 2 :
-            print("players joined")
-            for player in self.__class__.waiting_players:
-                player_obj = await self.get_player_obj(player)
-                player_nickname = self.__class__.nickname_map[player]
-                await self.tournament_add_Player(player_obj, tour_obj, player_nickname)
-                players = await self.get_players()
-                # await self.create_matches(tour_obj)
-            
-            await self.channel_layer.group_send(
-                self.__class__.room_name ,
-                {
-                    'type'   :  'start_game',
-                    'room_name' :  self.__class__.room_name,
-                    'status' : 'start_game',
-                    # 'players' :  self.__class__.nickname_map
-                })
-              
-    async def start_game(self, event):
-        await self.send(text_data=json.dumps({
-            'status'    : event['status'],
-            'room_name' : event['room_name'],
-        }))
-  
-    async def add_to_waiting_list(self):
+        if (len(self.__class__.waiting_players) == 4):
+            self.create_matchs()
+            print("matched")
+            await self.channel_layer.group_send(self.__class__.tour_name,
+            {
+                'type': 'players_matched'
+            })
+            pass
+
+    def add_to_waiting_list(self, username):
         self.__class__.channel_name_map[self.user.username] = self.channel_name
-        self.__class__.nickname_map[self.user.username] = self.nickname
-        self.__class__.waiting_players.append(self.user.username)
+        self.__class__.waiting_players.append(username)
 
-    async def create_tournamentRoom(self):
-        while True: 
-            room_name = f"tour{int(time.time() * 1000)}"
-            exists = await self.room_exists(room_name)
-            if not exists:
-                return room_name
-            
+    def userExists(self, user):
+        return user in self.__class__.waiting_players
+
+    def create_matchs(self):
+        random.shuffle(self.__class__.waiting_players)
+        for i in range(0, len(self.__class__.waiting_players), 2):
+            match = self.__class__.waiting_players[i:i + 2]
+            self.__class__.matches.append(match)
+        self.__class__.tours[self.__class__.tour] = copy.deepcopy(self.__class__.matches)
+        self.__class__.matches.clear()
+
+    def create_tournament_dict(self):
+        num_players = self.getMaxPlayers()
+
+        # Initialize the round number
+        round_number = 0
+
+        # While there are still players left to pair
+        while num_players > 1:
+            matches = []
+
+            # Create pairs of players   
+            for _ in range(num_players // 2):
+                matches.append(['', ''])  # Empty strings represent unfilled player slots
+
+            # If there's an odd number of players, one player advances automatically
+            if num_players % 2 == 1:
+                matches.append([''])  # One player without a match
+
+            # Add the round to the tournament dictionary
+            self.tours[round_number] = matches
+
+            # Update the number of players for the next round
+            num_players = len(matches)
+
+            # Move to the next round
+            round_number += 1
+
+        # Handle the final match
+        if num_players == 1:
+            self.__class__.tours[round_number] = [['']]  # Only one player left
+
+    async def  winnerNextTour(self, value):
+        for i in range(len(self.__class__.tours)):
+            for j in range(len(self.__class__.tours[i])):
+                if self.__class__.tours[i][j][0] == '':
+                    self.__class__.tours[i][j][0] = value
+                    return
+                elif self.__class__.tours[i][j][1] == '' :
+                    self.__class__.tours[i][j][1] = value
+                    return
+
     @sync_to_async
-    def create_tournament(self, room_name):
+    def create_Tournament(self, tour_name, maxPlayers):
         Tournament.objects.create(
-            name = room_name,
-            is_active= True
-        )  
-
-    @sync_to_async
-    def tournament_add_Player(self, player, tour, nickname):
-        userTournament.objects.create(
-            user = player,
-            tournament = tour,
-            user_tournament_name = nickname
+            name = tour_name,
+            is_active = True,
+            maxPlayers = maxPlayers,
         )
-        print (f"nick: {self.nickname}")
 
+    async def generate_unique_Tournament_name(self):
+        while True:
+            tour_name = f"Tour{int(time.time() * 1000)}"
+            exists = await self.tour_exists(tour_name)
+            if not exists:
+                return tour_name
+                     
     @sync_to_async
-    def room_exists(self, room_name):
-        return Tournament.objects.filter(name=room_name).exists()
-
+    def player_join_tournament(self, tour, player, alias):
+        userTournament.objects.create(
+            tournament = tour,
+            user = player,
+            is_active = True,
+            user_tournament_name = alias
+        )
+    
+    @sync_to_async
+    def tour_exists(self, tour_name):
+        return Tournament.objects.filter(name=tour_name).exists()
+    
+    def getMaxPlayers(self):
+        numberPlayers = {
+            "tour4": 4,
+            "tour8": 8,
+            "tour16": 16
+        }
+        return numberPlayers.get(self.tourType)
 
     @sync_to_async 
     def get_player_obj(self, username):
         user = User.objects.filter(
             Q(username=username)).first()
-        return user
-    
+        return user    
+
     @sync_to_async 
-    def get_tour_obj(self, room_name):
+    def get_Tournament_obj(self, name):
         tour = Tournament.objects.filter(
-            Q(name=room_name)).first()
+            Q(name=name)).first()
         return tour
     
-    async def tournament_created(self, event):
-        await self.send(text_data=json.dumps({
-            'status'    : event['status']
-        }))
-
-    @sync_to_async
-    def get_players(self):
-        tournament = Tournament.objects.filter(name=self.room_name).first()
-        if tournament:
-            players = userTournament.objects.filter(tournament=tournament).all()
-            return [player for player in players]
-        return []

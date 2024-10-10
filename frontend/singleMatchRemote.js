@@ -45,6 +45,7 @@ function startGame(data) {
             net = data.net;
             ball = data.ball;
             table = data.table;
+
             utils.setPlayersScore(data.lplayer_obj, data.rplayer_obj)
             utils.render(player, opponent,ball,table,net)
         }

@@ -73,7 +73,6 @@ class singleMatch(models.Model):
     # type = models.IntegerField()
     is_active = models.BooleanField(default=True)
 
-
     def __str__(self) -> str:
         return 'match1_' + str(self.id)
 
@@ -86,7 +85,6 @@ class Tournament(models.Model):
 
     def __str__(self) -> str:
         return 'tournament_' + str(self.id)
-    
 
 class matchTournament(models.Model):
 

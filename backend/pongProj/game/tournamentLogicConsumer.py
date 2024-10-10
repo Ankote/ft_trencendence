@@ -1,3 +1,4 @@
+
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .game import Player, Ball, Net, Table, PLAYER_WIDTH, PLAYER_HEIGHT, gameOver, movePlayer
 import json, asyncio, copy, random
@@ -75,14 +76,6 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
         if (action == "fin_tournament"):
             print("tournament finiched")
            
-
-    async def start_tournament(self):
-        if len (self.players) == self.getMaxPlayers():
-            await self.send(text_data=json.dumps({
-                    'status': 'players_ready',
-                    'tournament_stats' : self.tours,
-                    'currentMatch' : self.tours[self.tour][self.match_nbr]
-                }))
     
     def getMaxPlayers(self):
         numberPlayers = {
@@ -103,6 +96,7 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
         self.tours[self.tour] = copy.deepcopy(self.matches)
         self.matches.clear()
 
+    
     async def send_data_periodically(self):
 
         while True:
