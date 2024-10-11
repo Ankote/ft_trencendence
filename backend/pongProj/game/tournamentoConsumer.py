@@ -30,6 +30,7 @@ class TournamentRemote(AsyncWebsocketConsumer):
             self.__class__.tour_name = await self.generate_unique_Tournament_name()
             await self.create_Tournament(self.__class__.tour_name, self.getMaxPlayers())
             self.__class__.tour_obj = await self.get_Tournament_obj(self.__class__.tour_name)
+    
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         action = text_data_json.get('action')
@@ -40,15 +41,24 @@ class TournamentRemote(AsyncWebsocketConsumer):
                 self.add_to_waiting_list(username) # add user to waiting list
                 self.playerAlias = username
                 await self.player_join_tournament(self.__class__.tour_obj, self.player, self.playerAlias)
+                await self.channel_layer.group_add(self.__class__.tour_name, self.channel_name)
 
         if (len(self.__class__.waiting_players) == 4):
+            # for player in self.__class__.channel_name_map
             self.create_matchs()
-            print("matched")
+            # print(self.__class__.tours)
             await self.channel_layer.group_send(self.__class__.tour_name,
             {
-                'type': 'players_matched'
+                'type': 'start_Tournament',
+                'tournament_stats' : convert_keys_to_strings(self.__class__.tours)
             })
-            pass
+
+    async def start_Tournament(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'start_tournament',
+            'action' : "start_tournament",
+            'tournament_stats' : event['tournament_stats']
+        }))
 
     def add_to_waiting_list(self, username):
         self.__class__.channel_name_map[self.user.username] = self.channel_name
@@ -62,7 +72,7 @@ class TournamentRemote(AsyncWebsocketConsumer):
         for i in range(0, len(self.__class__.waiting_players), 2):
             match = self.__class__.waiting_players[i:i + 2]
             self.__class__.matches.append(match)
-        self.__class__.tours[self.__class__.tour] = copy.deepcopy(self.__class__.matches)
+        self.__class__.tours[str(self.__class__.tour)] = copy.deepcopy(self.__class__.matches)
         self.__class__.matches.clear()
 
     def create_tournament_dict(self):
@@ -84,7 +94,7 @@ class TournamentRemote(AsyncWebsocketConsumer):
                 matches.append([''])  # One player without a match
 
             # Add the round to the tournament dictionary
-            self.tours[round_number] = matches
+            self.__class__.tours[round_number] = matches
 
             # Update the number of players for the next round
             num_players = len(matches)
@@ -154,3 +164,6 @@ class TournamentRemote(AsyncWebsocketConsumer):
             Q(name=name)).first()
         return tour
     
+
+def convert_keys_to_strings(d):
+    return {str(key): value for key, value in d.items()}

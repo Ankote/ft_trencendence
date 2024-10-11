@@ -7,30 +7,6 @@ let ball = {}
 let table = {}
 let countPlayers = 0;
 
-function tournament_board(tours)
-{
-    let  cptTour = 1;
-    let toursObjs = {}
-    let objectsCpt = 0;
-    utils.changeContent(page.TournamentBoardPage())
-    while (cptTour - 1 < Object.keys(tours).length)
-    {
-        let tourClassName = 'username_round' + cptTour;
-        toursObjs = document.getElementsByClassName(tourClassName)
-        if (toursObjs)
-        {
-            for (let i = 0; i < tours[cptTour - 1].length; i++)
-            {
-                toursObjs[objectsCpt++].textContent = tours[cptTour - 1][i][0];
-                if (tours[cptTour - 1][i].length == 2)
-                    toursObjs[objectsCpt++].textContent = tours[cptTour - 1][i][1];
-            }
-            cptTour++;
-            objectsCpt =  0;
-        }
-    }
-}
-
 function getPlayersNumber(type)
 {
     const types= {'tour4': 4, 'tour8': 8, 'tour16': 16}
@@ -125,7 +101,7 @@ function Playersreadiness(socket)
 function handelTournamentStart(socket, data)
 {
    
-    tournament_board(data.tournament_stats)   
+    utils.tournament_board(data.tournament_stats)   
     let start = document.getElementById("start")
     start.onclick = async function start()
     {
@@ -185,7 +161,7 @@ async function matchTournament(type) {
         }
         if (data.status == 'tournament_finiched'){
             let winner = data.winner
-            tournament_board(data.tournament_stats)
+            utils.tournament_board(data.tournament_stats)
             document.getElementById("start").style.display = "none"
 
         }

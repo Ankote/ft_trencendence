@@ -1,4 +1,5 @@
-// Draw shapes & text functions
+// Draw shapes & text functions'
+import * as page from './pages.js' 
 
 export function changeContent(newContent) {
         document.getElementById('page').innerHTML = newContent;
@@ -176,5 +177,30 @@ export function stopPulseAnimation(element) {
     if (animationId) {
         cancelAnimationFrame(animationId);
         animationId = null; 
+    }
+}
+
+
+export function tournament_board(tours)
+{
+    let  cptTour = 1;
+    let toursObjs = {}
+    let objectsCpt = 0;
+    changeContent(page.TournamentBoardPage())
+    while (cptTour - 1 < Object.keys(tours).length)
+    {
+        let tourClassName = 'username_round' + cptTour;
+        toursObjs = document.getElementsByClassName(tourClassName)
+        if (toursObjs)
+        {
+            for (let i = 0; i < tours[cptTour - 1].length; i++)
+            {
+                toursObjs[objectsCpt++].textContent = tours[cptTour - 1][i][0];
+                if (tours[cptTour - 1][i].length == 2)
+                    toursObjs[objectsCpt++].textContent = tours[cptTour - 1][i][1];
+            }
+            cptTour++;
+            objectsCpt =  0;
+        }
     }
 }

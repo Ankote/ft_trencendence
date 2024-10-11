@@ -22,6 +22,17 @@ async function matchTournament(type){
             'nickname' : username,
         }))
     });
+    socket.onmessage = function(event) {
+        console.log("message recived")
+        const data = JSON.parse(event.data);
+        const action = data.action;
+        const tours = data.tournament_stats
+        if (action == "start_tournament"){
+            // utils.changeContent(page.TournamentBoardPage())
+            utils.tournament_board(tours)
+        }
+    
+    }
 }
 
 export function handelRemoteTournament(){
