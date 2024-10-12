@@ -163,7 +163,6 @@ async function matchTournament(type) {
             let winner = data.winner
             utils.tournament_board(data.tournament_stats)
             document.getElementById("start").style.display = "none"
-
         }
     }
     userJoin(tournamentSockcet)    

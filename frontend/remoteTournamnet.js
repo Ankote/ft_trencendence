@@ -30,8 +30,14 @@ async function matchTournament(type){
         if (action == "start_tournament"){
             // utils.changeContent(page.TournamentBoardPage())
             utils.tournament_board(tours)
+            socket.send(JSON.stringify({
+                'action' : 'start_match',
+            }))
+
         }
-    
+        if (action == 'start_match')
+            console.log(data)
+
     }
 }
 

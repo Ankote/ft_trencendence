@@ -3,7 +3,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from .game import Player, Ball, Net, Table, PLAYER_WIDTH, PLAYER_HEIGHT, gameOver, movePlayer
 import json, asyncio, copy, random
 from asgiref.sync import sync_to_async
-from .models import Tournament, userTournament, User
+from .models import Tournament, userTournament, User, singleMatch
 from django.db.models import Q
 import time
 
@@ -12,6 +12,7 @@ class TournamentRemote(AsyncWebsocketConsumer):
     waiting_players = []
     matches = []
     channel_name_map = {}
+    players_name_map = {}
     tours = {}
     match_nbr = 0
     tour = 0
@@ -24,6 +25,7 @@ class TournamentRemote(AsyncWebsocketConsumer):
         await self.accept()
         self.tourType = self.scope['url_route']['kwargs']['type']
         self.user  = self.scope["user"]
+        print(self.user)
         self.player = await self.get_player_obj(self.user.username)
         if len (self.__class__.waiting_players) == 0:
             self.create_tournament_dict()
@@ -43,15 +45,46 @@ class TournamentRemote(AsyncWebsocketConsumer):
                 await self.player_join_tournament(self.__class__.tour_obj, self.player, self.playerAlias)
                 await self.channel_layer.group_add(self.__class__.tour_name, self.channel_name)
 
-        if (len(self.__class__.waiting_players) == 4):
-            # for player in self.__class__.channel_name_map
-            self.create_matchs()
-            # print(self.__class__.tours)
+            if (len(self.__class__.waiting_players) == 4):
+                # for player in self.__class__.channel_name_map
+                self.create_matchs()
+                print(self.__class__.tours)
+                await self.channel_layer.group_send(self.__class__.tour_name,
+                {
+                    'type': 'start_Tournament',
+                    'tournament_stats' : convert_keys_to_strings(self.__class__.tours)
+                })
+
+        if action == 'start_match':
+            player1_alias = self.__class__.tours[self.__class__.tour][self.__class__.match_nbr][0]
+            player2_alias = self.__class__.tours[self.__class__.tour][self.__class__.match_nbr][1]
+            player1 = self.__class__.players_name_map[player1_alias]
+            player2 =  self.__class__.players_name_map[player2_alias]
+            print(self.__class__.players_name_map)
+            print(player1_alias)
+            print(player2_alias)
+            print(player1)
+            print(player2)
+            # print(self.__class__.players_name_map)
+            # room_name = await self.generate_unique_room_name()
+            # await self.create_match(room_name, player1, player2)
+            print("starts")
             await self.channel_layer.group_send(self.__class__.tour_name,
             {
-                'type': 'start_Tournament',
-                'tournament_stats' : convert_keys_to_strings(self.__class__.tours)
+                'type': 'start_match',
+                'action' : "start_match",
+                'player1' : player1,
+                'player2' : player2,
             })
+
+
+    async def start_match(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'start_match',
+            'action' : event['action'],
+            'player1': event['player2'],
+            'player2': event['player2'],
+        }))
 
     async def start_Tournament(self, event):
         await self.send(text_data=json.dumps({
@@ -62,17 +95,24 @@ class TournamentRemote(AsyncWebsocketConsumer):
 
     def add_to_waiting_list(self, username):
         self.__class__.channel_name_map[self.user.username] = self.channel_name
+        self.__class__.players_name_map[username] = self.user.username
         self.__class__.waiting_players.append(username)
 
     def userExists(self, user):
-        return user in self.__class__.waiting_players
+        return user in self.__class__.waiting_players    
+    
+    @sync_to_async
+    def is_player_in_active_game(self, username):
+        return singleMatch.objects.filter(
+            Q(player1__username=username, is_active=True) | Q(player2__username=username, is_active=True)
+        ).exists()
 
     def create_matchs(self):
         random.shuffle(self.__class__.waiting_players)
         for i in range(0, len(self.__class__.waiting_players), 2):
             match = self.__class__.waiting_players[i:i + 2]
             self.__class__.matches.append(match)
-        self.__class__.tours[str(self.__class__.tour)] = copy.deepcopy(self.__class__.matches)
+        self.__class__.tours[self.__class__.tour] = copy.deepcopy(self.__class__.matches)
         self.__class__.matches.clear()
 
     def create_tournament_dict(self):
@@ -130,6 +170,18 @@ class TournamentRemote(AsyncWebsocketConsumer):
             exists = await self.tour_exists(tour_name)
             if not exists:
                 return tour_name
+            
+    
+    @sync_to_async
+    def room_exists(self, room_name):
+        return singleMatch.objects.filter(name=room_name).exists()
+    
+    async def generate_unique_room_name(self):
+        while True:
+            room_name = f"tour_room_{int(time.time() * 1000)}"
+            exists = await self.room_exists(room_name)
+            if not exists:
+                return room_name
                      
     @sync_to_async
     def player_join_tournament(self, tour, player, alias):
@@ -138,6 +190,15 @@ class TournamentRemote(AsyncWebsocketConsumer):
             user = player,
             is_active = True,
             user_tournament_name = alias
+        )
+
+    @sync_to_async
+    def create_match(self, room_name, player1, player2):
+        singleMatch.objects.create(
+            name=room_name,
+            player1=player1,
+            player2=player2,
+            is_active=True
         )
     
     @sync_to_async
@@ -157,6 +218,12 @@ class TournamentRemote(AsyncWebsocketConsumer):
         user = User.objects.filter(
             Q(username=username)).first()
         return user    
+    
+    @sync_to_async 
+    def get_player_obj_by_alias(self, alias):
+        user = userTournament.objects.filter(
+            Q(user_tournament_name=alias)).first().user
+        return user   
 
     @sync_to_async 
     def get_Tournament_obj(self, name):

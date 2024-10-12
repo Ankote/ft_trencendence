@@ -86,7 +86,7 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_add(room_name, player1_channel)
             await self.channel_layer.group_add(room_name, player2_channel)
 
-            await self.create_room(room_name,player1, player2)
+            await self.create_match(room_name,player1, player2)
             await self.channel_layer.group_send(
                 room_name,
                 {
@@ -111,7 +111,7 @@ class MatchmakingConsumer(AsyncWebsocketConsumer):
         return singleMatch.objects.filter(name=room_name).exists()
 
     @sync_to_async
-    def create_room(self, room_name, player1, player2):
+    def create_match(self, room_name, player1, player2):
         singleMatch.objects.create(
             name=room_name,
             player1=player1,
