@@ -64,9 +64,9 @@ async function start_match(lPlayerStatus, rPlayerStatus, socket)
                 return;
             utils.changeContent(page.gamePage())
             update(socket)
-        socket.send(JSON.stringify({
-            'action' : 'start_match',
-        }))
+            socket.send(JSON.stringify({
+                'action' : 'start_match',
+            }))
     }
 }
 

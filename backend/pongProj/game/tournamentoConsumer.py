@@ -6,6 +6,7 @@ from asgiref.sync import sync_to_async
 from .models import Tournament, userTournament, User, singleMatch
 from django.db.models import Q
 import time
+from django.db import transaction, IntegrityError
 
 class TournamentRemote(AsyncWebsocketConsumer):
     tour_name = ""
@@ -58,32 +59,45 @@ class TournamentRemote(AsyncWebsocketConsumer):
         if action == 'start_match':
             player1_alias = self.__class__.tours[self.__class__.tour][self.__class__.match_nbr][0]
             player2_alias = self.__class__.tours[self.__class__.tour][self.__class__.match_nbr][1]
-            player1 = self.__class__.players_name_map[player1_alias]
-            player2 =  self.__class__.players_name_map[player2_alias]
-            print(self.__class__.players_name_map)
+            player1_name = self.__class__.players_name_map[player1_alias]
+            player2_name = self.__class__.players_name_map[player2_alias]
+
+            # Get the player objects
             print(player1_alias)
             print(player2_alias)
-            print(player1)
-            print(player2)
-            # print(self.__class__.players_name_map)
-            # room_name = await self.generate_unique_room_name()
-            # await self.create_match(room_name, player1, player2)
-            print("starts")
-            await self.channel_layer.group_send(self.__class__.tour_name,
-            {
-                'type': 'start_match',
-                'action' : "start_match",
-                'player1' : player1,
-                'player2' : player2,
-            })
+            player1_obj = await self.get_player_obj(player1_name)
+            player2_obj = await self.get_player_obj(player2_name)
+           
+            room_name = await self.generate_unique_room_name()
+            if (await self.create_match(room_name, player1_obj, player2_obj)):
+                await self.channel_layer.group_send(self.__class__.tour_name, {
+                    'type': 'start_match',
+                    'action': 'match_starts',
+                    'room_name' : room_name,
+                    'player1_alias' : player1_alias,
+                    'player2_alias' : player2_alias,
+                    'player1_name' : player1_name,
+                    'player2_name' : player2_name,
+
+                })
+                print("Creating a new match")
+            if action == 'game_over':
+                self.match_nbr += 1
+                if self.match_nbr == len (self.tours[self.tour]) :
+                    self.tour += 1
+                    self.match_nbr = 0 
+
 
 
     async def start_match(self, event):
         await self.send(text_data=json.dumps({
             'type': 'start_match',
             'action' : event['action'],
-            'player1': event['player2'],
-            'player2': event['player2'],
+            'room_name' : event['room_name'],
+            'player1_alias' : event['player1_alias'],
+            'player2_alias' : event['player2_alias'],
+            'player1_name' : event['player1_name'],
+            'player2_name' : event['player2_name'],
         }))
 
     async def start_Tournament(self, event):
@@ -192,14 +206,26 @@ class TournamentRemote(AsyncWebsocketConsumer):
             user_tournament_name = alias
         )
 
+
     @sync_to_async
+    @transaction.atomic
     def create_match(self, room_name, player1, player2):
-        singleMatch.objects.create(
-            name=room_name,
-            player1=player1,
-            player2=player2,
-            is_active=True
-        )
+        # Check within the transaction if the match already exists before creating it
+        if not singleMatch.objects.filter(
+                (Q(player1=player1) & Q(player2=player2)) | 
+                (Q(player1=player2) & Q(player2=player1)),
+                is_active=True
+            ).exists():
+            singleMatch.objects.create(
+                name=room_name,
+                player1=player1,
+                player2=player2,
+                is_active=True
+            )
+            return True
+        else:
+            return False
+
     
     @sync_to_async
     def tour_exists(self, tour_name):

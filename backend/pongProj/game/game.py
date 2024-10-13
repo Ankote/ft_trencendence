@@ -182,9 +182,9 @@ def resetPlayers(lplayer, rplayer):
      rplayer.score = 0
 
 def gameOver(lplayer, rplayer):
-    if lplayer.score >= 1: #and lplayer.score - rplayer.score >= 2
+    if lplayer.score >= 10: #and lplayer.score - rplayer.score >= 2
         return lplayer
-    elif rplayer.score >= 1: #and rplayer.score - lplayer.score >= 2
+    elif rplayer.score >= 10 : #and rplayer.score - lplayer.score >= 2
         return rplayer
     return None
 

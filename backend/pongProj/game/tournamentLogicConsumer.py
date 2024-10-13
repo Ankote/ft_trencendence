@@ -128,7 +128,6 @@ class TournamentLogicConsumer(AsyncWebsocketConsumer):
                     }))
             await asyncio.sleep(0.009)
 
-
     async def endGame(self):
         winner = gameOver(self.game_state['lplayer'] ,self.game_state['rplayer'] )
         if winner == self.game_state['lplayer']:

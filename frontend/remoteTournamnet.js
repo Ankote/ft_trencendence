@@ -2,24 +2,65 @@
 import * as utils from './utils.js'
 import * as page from './pages.js'
 
+let player = {}
+let opponent = {}
+let net = {}
+let ball = {}
+let table = {}
+
+
+
 
 function userJoin()
 {
     // const username = document.getElementById('username')
     // console.log(username.value)
 }
+function startGame(data, username, tour_socket)
+{
+    let url = `ws://127.0.0.1:8000/ws/game/${data.room_name}/${username}/`;
+    const socket = new WebSocket(url)
+    utils.changeContent(page.gamePage())
 
+    socket.onmessage = async function(event){
+        let data = JSON.parse(event.data);
+        if (data.action == "handel_prematch")
+        {
+            socket.send(JSON.stringify({
+                'action': 'start_match'
+            }))
+        }
+        if (data.action == 'changes') {
+            player = data.player;
+            opponent = data.opponent;
+            net = data.net;
+            ball = data.ball;
+            table = data.table;
+
+            utils.setPlayersScore(data.lplayer_obj, data.rplayer_obj)
+            utils.render(player, opponent,ball,table,net)
+        }
+        if (data.action == 'game_over')
+        {
+            tour_socket.send(JSON.stringify({
+                'action': 'game_over'
+            }))
+            
+        }
+    }
+
+}
 async function matchTournament(type){
     let url = `ws://127.0.0.1:8000/ws/remoteTournament/` + type + '/';
     const socket = new WebSocket(url)
     const joinBtn = document.getElementById("joinBtn")
-
+    let alias_name;
     joinBtn.addEventListener("click", ()=>{
-        const username = document.getElementById('username').value
-        console.log(username)
+        alias_name  = document.getElementById('username').value
+        console.log(alias_name)
         socket.send(JSON.stringify({
             'action' : 'player_joined',
-            'nickname' : username,
+            'nickname' : alias_name,
         }))
     });
     socket.onmessage = function(event) {
@@ -35,8 +76,26 @@ async function matchTournament(type){
             }))
 
         }
-        if (action == 'start_match')
-            console.log(data)
+        if (action == 'match_starts'){
+            console.log("what??")
+            if (alias_name == data.player1_alias || alias_name == data.player2_alias)
+            {
+                let username
+                if (alias_name == data.player1_alias){
+                    username = data.player1_name
+                    console.log("you'r first player")
+                }
+                else if (alias_name == data.player2_alias)
+                {
+                    username = data.player2_name
+                    console.log("you'r second player")
+                }
+                startGame(data, username, socket)
+            }
+            else
+                console.log("sbaaar ta tji nobtek azebbi")
+
+        }
 
     }
 }
